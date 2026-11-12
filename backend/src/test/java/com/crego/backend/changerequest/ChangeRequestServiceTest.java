@@ -84,6 +84,44 @@ class ChangeRequestServiceTest {
     }
 
     @Test
+    void cannotRequestTheSameMethodAsTheCurrentOne() {
+        when(paymentMethodRepository.findByClientIdAndStatus(CLIENT_ID, PaymentMethodStatus.ACTIVE))
+                .thenReturn(Optional.of(activeMethod));
+        // Same card as the active one; holder name differs only in letter case
+        var sameCard = new PaymentMethodRequest(PaymentMethodType.CARD, "4111 1111 1111 1111", "ANNA OZOLA", "12/28", null);
+
+        assertThatThrownBy(() -> service.create(CLIENT_ID, sameCard))
+                .isInstanceOfSatisfying(ResponseStatusException.class,
+                        e -> assertThat(e.getStatusCode()).isEqualTo(HttpStatus.CONFLICT));
+        verify(changeRequestRepository, never()).save(any());
+    }
+
+    @Test
+    void cannotRequestTheSameIbanAsTheCurrentOne() {
+        activeMethod.setDetails(new MethodData(PaymentMethodType.BANK_ACCOUNT, null, null, null, null, "LV80BANK0000435195001"));
+        when(paymentMethodRepository.findByClientIdAndStatus(CLIENT_ID, PaymentMethodStatus.ACTIVE))
+                .thenReturn(Optional.of(activeMethod));
+
+        // NEW_IBAN is the same account, typed in lowercase with spaces
+        assertThatThrownBy(() -> service.create(CLIENT_ID, NEW_IBAN))
+                .isInstanceOfSatisfying(ResponseStatusException.class,
+                        e -> assertThat(e.getStatusCode()).isEqualTo(HttpStatus.CONFLICT));
+        verify(changeRequestRepository, never()).save(any());
+    }
+
+    @Test
+    void renewedCardWithNewExpiryIsAllowed() {
+        when(paymentMethodRepository.findByClientIdAndStatus(CLIENT_ID, PaymentMethodStatus.ACTIVE))
+                .thenReturn(Optional.of(activeMethod));
+        when(changeRequestRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
+        var renewedCard = new PaymentMethodRequest(PaymentMethodType.CARD, "4111111111111111", "Anna Ozola", "12/31", null);
+
+        service.create(CLIENT_ID, renewedCard);
+
+        verify(changeRequestRepository).save(any());
+    }
+
+    @Test
     void changeRequiresAnExistingMethod() {
         when(paymentMethodRepository.findByClientIdAndStatus(CLIENT_ID, PaymentMethodStatus.ACTIVE))
                 .thenReturn(Optional.empty());

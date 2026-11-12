@@ -1,0 +1,57 @@
+/* Alerts (messages and banners) and status badges */
+.alert {
+  border-radius: var(--radius);
+  padding: 0.75rem 1rem;
+  margin-bottom: 1.25rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.alert p {
+  margin: 0.25rem 0 0;
+}
+
+.alert-success {
+  background: var(--color-success-bg);
+  color: var(--color-success);
+}
+
+.alert-error {
+  background: var(--color-error-bg);
+  color: var(--color-error);
+}
+
+.alert-info {
+  background: var(--color-info-bg);
+  color: var(--color-info);
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.badge-pending {
+  background: var(--color-warning-bg);
+  color: var(--color-warning);
+}
+
+.badge-approved {
+  background: var(--color-success-bg);
+  color: var(--color-success);
+}
+
+.badge-rejected {
+  background: var(--color-error-bg);
+  color: var(--color-error);
+}
+
+.badge-cancelled {
+  background: var(--color-bg);
+  color: var(--color-muted);
+}

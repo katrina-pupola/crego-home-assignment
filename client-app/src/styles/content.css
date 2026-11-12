@@ -1,0 +1,49 @@
+/* Payment method summary and tables */
+.method {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.method-icon {
+  font-size: 1.6rem;
+}
+
+.method-title {
+  font-weight: 600;
+  margin: 0;
+}
+
+.method .muted {
+  margin: 0;
+}
+
+.table-wrap {
+  overflow-x: auto;
+  padding: 0;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  text-align: left;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--color-border);
+  vertical-align: top;
+}
+
+th {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--color-muted);
+}
+
+tbody tr:last-child td {
+  border-bottom: 0;
+}

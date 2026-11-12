@@ -27,7 +27,7 @@ public final class ApiTestSupport {
     public static String registerNewClient(MockMvc mvc) throws Exception {
         String email = "test-" + UUID.randomUUID() + "@crego.test";
         String body = """
-                {"fullName": "Test Client", "email": "%s", "password": "secret123"}
+                {"fullName": "Test Client", "email": "%s", "password": "Secret-Pass-123"}
                 """.formatted(email);
         return token(mvc.perform(post("/api/auth/client/register").contentType(MediaType.APPLICATION_JSON).content(body))
                 .andExpect(status().isCreated())

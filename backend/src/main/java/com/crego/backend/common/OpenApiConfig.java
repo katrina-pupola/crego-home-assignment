@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
 // Adds the "Authorize" button to Swagger UI and sends the token with every request
 @Configuration
 @OpenAPIDefinition(
-        info = @Info(title = "Crego Payment Methods API", version = "v1"),
+        info = @Info(title = "Payment Methods API", version = "v1"),
         security = @SecurityRequirement(name = "bearerAuth"))
 @SecurityScheme(name = "bearerAuth", type = SecuritySchemeType.HTTP, scheme = "bearer", bearerFormat = "JWT")
 public class OpenApiConfig {

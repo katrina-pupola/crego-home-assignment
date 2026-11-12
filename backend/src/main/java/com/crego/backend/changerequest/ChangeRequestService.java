@@ -29,11 +29,16 @@ public class ChangeRequestService {
         if (changeRequestRepository.existsByClientIdAndStatus(clientId, ChangeRequestStatus.PENDING)) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "A change request is already pending");
         }
+        MethodData proposed = MethodData.from(request);
+        if (proposed.isSameAs(current.getDetails())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                    "The new payment method is the same as your current one");
+        }
 
         ChangeRequest changeRequest = new ChangeRequest();
         changeRequest.setClient(current.getClient());
         changeRequest.setCurrentMethod(current);
-        changeRequest.setProposed(MethodData.from(request));
+        changeRequest.setProposed(proposed);
         changeRequest.setStatus(ChangeRequestStatus.PENDING);
         return ChangeRequestResponse.from(changeRequestRepository.save(changeRequest));
     }
