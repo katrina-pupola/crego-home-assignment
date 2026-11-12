@@ -61,4 +61,17 @@ public class PaymentMethod {
     void onCreate() {
         createdAt = Instant.now();
     }
+
+    public MethodData getDetails() {
+        return new MethodData(type, cardLast4, cardBrand, cardHolder, cardExpiry, iban);
+    }
+
+    public void setDetails(MethodData details) {
+        type = details.type();
+        cardLast4 = details.cardLast4();
+        cardBrand = details.cardBrand();
+        cardHolder = details.cardHolder();
+        cardExpiry = details.cardExpiry();
+        iban = details.iban();
+    }
 }

@@ -7,9 +7,6 @@ spring:
     hibernate:
       ddl-auto: validate
     open-in-view: false
-  mvc:
-    problemdetails:
-      enabled: true
 server:
   port: 8080
 app:

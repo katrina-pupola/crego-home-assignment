@@ -3,6 +3,7 @@ package com.crego.backend.changerequest;
 import com.crego.backend.auth.BoUser;
 import com.crego.backend.client.Client;
 import com.crego.backend.paymentmethod.CardBrand;
+import com.crego.backend.paymentmethod.MethodData;
 import com.crego.backend.paymentmethod.PaymentMethod;
 import com.crego.backend.paymentmethod.PaymentMethodType;
 import jakarta.persistence.Column;
@@ -82,5 +83,18 @@ public class ChangeRequest {
     @PrePersist
     void onCreate() {
         createdAt = Instant.now();
+    }
+
+    public MethodData getProposed() {
+        return new MethodData(newType, newCardLast4, newCardBrand, newCardHolder, newCardExpiry, newIban);
+    }
+
+    public void setProposed(MethodData proposed) {
+        newType = proposed.type();
+        newCardLast4 = proposed.cardLast4();
+        newCardBrand = proposed.cardBrand();
+        newCardHolder = proposed.cardHolder();
+        newCardExpiry = proposed.cardExpiry();
+        newIban = proposed.iban();
     }
 }
