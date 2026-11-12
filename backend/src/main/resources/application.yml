@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/crego
+    url: jdbc:postgresql://localhost:5433/crego
     username: crego
     password: crego
   jpa:
