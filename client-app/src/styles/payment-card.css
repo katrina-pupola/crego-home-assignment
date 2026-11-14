@@ -12,6 +12,8 @@
   overflow: hidden;
   box-shadow: 0 12px 28px rgb(15 23 42 / 0.25);
   transition: background 0.3s ease;
+  /* Lets the text inside size itself relative to the card's width (cqi units) */
+  container-type: inline-size;
 }
 
 /* Soft light reflections */
@@ -96,7 +98,8 @@
   position: relative;
   margin: 0;
   font-family: ui-monospace, 'Cascadia Mono', Consolas, monospace;
-  font-size: 1.25rem;
+  /* Shrinks on narrow cards so all 19 characters always fit */
+  font-size: min(1.25rem, 6.5cqi);
   letter-spacing: 0.12em;
   white-space: nowrap;
 }

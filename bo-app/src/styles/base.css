@@ -1,0 +1,106 @@
+/* Colour tokens, reset and typography. Back Office uses a violet accent to tell it apart from the client app. */
+:root {
+  --color-bg: #f5f6f8;
+  --color-surface: #ffffff;
+  --color-text: #1f2937;
+  --color-muted: #6b7280;
+  --color-border: #e5e7eb;
+  --color-primary: #6d28d9;
+  --color-primary-hover: #5b21b6;
+  --color-success-bg: #ecfdf5;
+  --color-success: #047857;
+  --color-error-bg: #fef2f2;
+  --color-error: #b91c1c;
+  --color-info-bg: #f5f3ff;
+  --color-info: #5b21b6;
+  --color-warning-bg: #fffbeb;
+  --color-warning: #b45309;
+  --color-nav: #1e1b4b;
+  --radius: 8px;
+  --shadow-sm: 0 1px 2px rgb(15 23 42 / 0.04), 0 4px 16px rgb(15 23 42 / 0.04);
+  font-family:
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
+  color: var(--color-text);
+  background: var(--color-bg);
+  line-height: 1.5;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(1200px 400px at 50% -200px, rgb(139 92 246 / 0.08), transparent),
+    var(--color-bg);
+}
+
+h1 {
+  font-size: 1.6rem;
+  margin: 0 0 1.25rem;
+}
+
+h2 {
+  font-size: 1.1rem;
+  margin: 0 0 0.75rem;
+}
+
+p {
+  margin: 0 0 0.75rem;
+}
+
+a {
+  color: var(--color-primary);
+}
+
+.muted {
+  color: var(--color-muted);
+}
+
+/* Small uppercase label above a page title or a section */
+.eyebrow,
+.section-label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+  margin: 0 0 0.4rem;
+}
+
+.eyebrow {
+  color: var(--color-primary);
+}
+
+.section-label {
+  margin-top: 1.25rem;
+}
+
+.mono {
+  font-family: ui-monospace, 'Cascadia Mono', Consolas, monospace;
+  letter-spacing: 0.04em;
+}
+
+/* Hidden visually but still available to screen readers and keyboard */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.center {
+  text-align: center;
+  margin-top: 1rem;
+}

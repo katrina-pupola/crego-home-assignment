@@ -41,6 +41,19 @@ class SecurityIntegrationTest {
     }
 
     @Test
+    void boTokenCanReadOwnProfile() throws Exception {
+        mvc.perform(get("/api/bo/me").header(HttpHeaders.AUTHORIZATION, bearer(loginBo(mvc))))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.fullName").value("Crego Admin"));
+    }
+
+    @Test
+    void clientTokenCannotReadBoProfile() throws Exception {
+        mvc.perform(get("/api/bo/me").header(HttpHeaders.AUTHORIZATION, bearer(loginDemoClient(mvc))))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
     void requestWithoutTokenIsUnauthorized() throws Exception {
         mvc.perform(get("/api/client/me")).andExpect(status().isUnauthorized());
         mvc.perform(get("/api/bo/change-requests")).andExpect(status().isUnauthorized());

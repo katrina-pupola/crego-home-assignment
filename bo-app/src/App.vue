@@ -1,85 +1,62 @@
 <script setup lang="ts">
-import { RouterLink, RouterView } from 'vue-router'
-import HelloWorld from './components/HelloWorld.vue'
+import { watch } from 'vue'
+import { RouterLink, RouterView, useRouter } from 'vue-router'
+import ConfirmDialog from '@/components/ConfirmDialog.vue'
+import { useSessionTimeout } from '@/composables/useSessionTimeout'
+import { useAuthStore } from '@/stores/auth'
+import { initials } from '@/utils/format'
+
+const auth = useAuthStore()
+const router = useRouter()
+const { showWarning, timeLeft, dismissWarning, logInAgain } = useSessionTimeout()
+
+// Load the name shown in the header whenever a staff user logs in
+watch(
+  () => auth.isLoggedIn,
+  (loggedIn) => {
+    if (loggedIn && !auth.profile) auth.loadProfile().catch(() => {})
+  },
+  { immediate: true },
+)
+
+function logout() {
+  auth.logout()
+  router.push({ name: 'login' })
+}
 </script>
 
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
-
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-
+  <header v-if="auth.isLoggedIn" class="topbar">
+    <div class="topbar-inner">
+      <RouterLink to="/" class="brand">
+        <span class="brand-mark" aria-hidden="true">PM</span>
+        <span class="brand-text">Payment Methods</span>
+        <span class="bo-tag">Back Office</span>
+      </RouterLink>
       <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
+        <RouterLink to="/">Change requests</RouterLink>
       </nav>
+      <div class="user">
+        <template v-if="auth.profile">
+          <span class="avatar" aria-hidden="true">{{ initials(auth.profile.fullName) }}</span>
+          <span class="user-name">{{ auth.profile.fullName }}</span>
+        </template>
+        <button class="btn btn-ghost" type="button" @click="logout">Log out</button>
+      </div>
     </div>
   </header>
 
-  <RouterView />
+  <main class="container">
+    <RouterView />
+  </main>
+
+  <ConfirmDialog
+    :open="showWarning"
+    title="Your session is about to expire"
+    :message="`For your security you will be logged out in ${timeLeft}. Logging in again starts a new session; an unfinished decision on this page will be lost.`"
+    confirm-label="Log in again"
+    cancel-label="Dismiss"
+    @confirm="logInAgain"
+    @cancel="dismissWarning"
+  />
 </template>
-
-<style scoped>
-header {
-  line-height: 1.5;
-  max-height: 100vh;
-}
-
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-nav {
-  width: 100%;
-  font-size: 12px;
-  text-align: center;
-  margin-top: 2rem;
-}
-
-nav a.router-link-exact-active {
-  color: var(--color-text);
-}
-
-nav a.router-link-exact-active:hover {
-  background-color: transparent;
-}
-
-nav a {
-  display: inline-block;
-  padding: 0 1rem;
-  border-left: 1px solid var(--color-border);
-}
-
-nav a:first-of-type {
-  border: 0;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-
-  nav {
-    text-align: left;
-    margin-left: -1rem;
-    font-size: 1rem;
-
-    padding: 1rem 0;
-    margin-top: 1rem;
-  }
-}
-</style>

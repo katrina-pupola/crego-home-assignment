@@ -26,7 +26,9 @@ export const useAuthStore = defineStore('auth', () => {
   const profile = ref<ClientProfile | null>(null)
 
   const payload = computed(() => (token.value ? decode(token.value) : null))
-  const isLoggedIn = computed(() => payload.value !== null && payload.value.exp * 1000 > Date.now())
+  // Expiry time in milliseconds, read from the token's "exp" claim
+  const expiresAt = computed(() => (payload.value ? payload.value.exp * 1000 : null))
+  const isLoggedIn = computed(() => expiresAt.value !== null && expiresAt.value > Date.now())
   const userId = computed(() => payload.value?.sub ?? null)
 
   function setToken(value: string) {
@@ -52,5 +54,5 @@ export const useAuthStore = defineStore('auth', () => {
     localStorage.removeItem(TOKEN_KEY)
   }
 
-  return { token, profile, isLoggedIn, userId, login, register, loadProfile, logout }
+  return { token, profile, expiresAt, isLoggedIn, userId, login, register, loadProfile, logout }
 })

@@ -1,0 +1,131 @@
+/* Bank card drawn like the physical card (credit card proportions 85.6 × 54 mm) */
+.pcard {
+  position: relative;
+  aspect-ratio: 1.586;
+  max-width: 380px;
+  padding: 1.4rem 1.5rem;
+  border-radius: 16px;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+  box-shadow: 0 12px 28px rgb(15 23 42 / 0.25);
+  transition: background 0.3s ease;
+  /* Lets the text inside size itself relative to the card's width (cqi units) */
+  container-type: inline-size;
+}
+
+/* Soft light reflections */
+.pcard::before,
+.pcard::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  background: rgb(255 255 255 / 0.08);
+  pointer-events: none;
+}
+
+.pcard::before {
+  width: 18rem;
+  height: 18rem;
+  top: -9rem;
+  right: -6rem;
+}
+
+.pcard::after {
+  width: 12rem;
+  height: 12rem;
+  bottom: -7rem;
+  left: -3rem;
+}
+
+.pcard-visa {
+  background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 55%, #38bdf8 100%);
+}
+
+.pcard-mastercard {
+  background: linear-gradient(135deg, #111827 0%, #374151 60%, #4b5563 100%);
+}
+
+.pcard-amex {
+  background: linear-gradient(135deg, #0f766e 0%, #0891b2 60%, #67e8f9 100%);
+}
+
+.pcard-other {
+  background: linear-gradient(135deg, #334155 0%, #64748b 100%);
+}
+
+.pcard-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.pcard-chip {
+  width: 2.6rem;
+  height: 1.9rem;
+  border-radius: 6px;
+  background: linear-gradient(135deg, #fde68a, #d97706);
+  box-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.15);
+}
+
+.pcard-brand {
+  font-weight: 800;
+  font-style: italic;
+  font-size: 1.15rem;
+  letter-spacing: 0.02em;
+}
+
+/* Two overlapping circles, Mastercard style */
+.mc-logo {
+  display: inline-flex;
+}
+
+.mc-logo span {
+  width: 1.7rem;
+  height: 1.7rem;
+  border-radius: 50%;
+  background: #eb001b;
+}
+
+.mc-logo span + span {
+  margin-left: -0.7rem;
+  background: rgb(247 158 27 / 0.9);
+}
+
+.pcard-number {
+  position: relative;
+  margin: 0;
+  font-family: ui-monospace, 'Cascadia Mono', Consolas, monospace;
+  /* Shrinks on narrow cards so all 19 characters always fit */
+  font-size: min(1.25rem, 6.5cqi);
+  letter-spacing: 0.12em;
+  white-space: nowrap;
+}
+
+.pcard-bottom {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.pcard-label {
+  display: block;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+}
+
+.pcard-value {
+  display: block;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 14rem;
+}

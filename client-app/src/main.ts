@@ -16,9 +16,12 @@ app.use(router)
 const auth = useAuthStore()
 configureHttp({
   getToken: () => auth.token,
+  // The backend rejected the token: log out and return to this page after logging in again
   onUnauthorized: () => {
+    const current = router.currentRoute.value
+    if (current.name === 'login') return // several parallel requests can fail at once
     auth.logout()
-    router.push({ name: 'login', query: { expired: '1' } })
+    router.push({ name: 'login', query: { expired: '1', redirect: current.fullPath } })
   },
 })
 

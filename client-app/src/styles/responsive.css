@@ -1,0 +1,192 @@
+/* Phone layout. Imported last so these rules override the desktop styles. */
+@media (max-width: 640px) {
+  h1 {
+    font-size: 1.35rem;
+  }
+
+  .container {
+    padding: 1.25rem 1rem 2rem;
+  }
+
+  /* Top bar on two rows: brand and user first, navigation below */
+  .topbar-inner {
+    flex-wrap: wrap;
+    gap: 0.5rem 0.75rem;
+    padding: 0.6rem 1rem;
+  }
+
+  .brand {
+    flex: 1;
+    min-width: 0;
+    font-size: 0.95rem;
+    white-space: nowrap;
+  }
+
+  .user {
+    order: 2;
+    gap: 0.4rem;
+  }
+
+  .topbar nav {
+    order: 3;
+    flex-basis: 100%;
+    overflow-x: auto;
+  }
+
+  .topbar nav a {
+    white-space: nowrap;
+    padding: 0.25rem 0.7rem;
+    font-size: 0.9rem;
+  }
+
+  .btn-ghost {
+    padding: 0.3rem 0.7rem;
+    font-size: 0.9rem;
+  }
+
+  /* Page header: title first, action button full width underneath */
+  .page-header {
+    flex-direction: column;
+    align-items: stretch;
+    margin-bottom: 1.25rem;
+  }
+
+  .page-header .btn {
+    text-align: center;
+  }
+
+  /* The intro line under page titles is skipped on phones to save space */
+  .page-header .muted {
+    display: none;
+  }
+
+  .card {
+    padding: 1.1rem;
+    border-radius: 12px;
+  }
+
+  .empty-state {
+    padding: 2rem 1rem;
+  }
+
+  /* Tables become a compact list: each row is a small block laid out with grid areas */
+  .card.table-wrap {
+    padding: 0;
+  }
+
+  .table-wrap table,
+  .table-wrap tbody {
+    display: block;
+  }
+
+  .table-wrap thead {
+    display: none;
+  }
+
+  .table-wrap tr {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0.2rem 0.75rem;
+    padding: 0.9rem 1rem;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .table-wrap tbody tr:last-child {
+    border-bottom: 0;
+  }
+
+  .table-wrap td {
+    display: block;
+    padding: 0;
+    border: 0;
+  }
+
+  /* Small inline label, e.g. "Submitted 14 Nov 2026" */
+  .table-wrap td[data-label]::before {
+    content: attr(data-label) ' ';
+    color: var(--color-muted);
+  }
+
+  .cell-method {
+    white-space: normal;
+  }
+
+  .cell-date,
+  .cell-decided,
+  .cell-comment {
+    grid-column: 1 / -1;
+    font-size: 0.85rem;
+  }
+
+  .cell-comment {
+    max-width: none;
+  }
+
+  /* Modal buttons share the full width */
+  .dialog-actions .btn {
+    flex: 1;
+  }
+
+  /* Login and register: short intro so the form is visible without scrolling */
+  .auth-layout {
+    margin: 0.5rem 0;
+  }
+
+  .auth-intro,
+  .auth-form {
+    padding: 1.5rem;
+  }
+
+  .auth-brand {
+    margin-bottom: 0.75rem;
+  }
+
+  .auth-intro h2 {
+    font-size: 1.25rem;
+    margin-bottom: 0;
+  }
+
+  .auth-intro > p:not(.auth-brand),
+  .auth-points {
+    display: none;
+  }
+
+  /* Smaller timeline text so all three steps fit side by side */
+  .timeline-label {
+    font-size: 0.8rem;
+  }
+
+  .timeline-detail {
+    font-size: 0.7rem;
+  }
+
+  .pcard {
+    padding: 1.1rem 1.2rem;
+  }
+}
+
+/* Request history rows: method and status on top, dates and comment below */
+@media (max-width: 640px) {
+  .table-wrap .cell-method {
+    grid-row: 1;
+    grid-column: 1;
+    font-weight: 600;
+  }
+
+  .table-wrap .cell-status {
+    grid-row: 1;
+    grid-column: 2;
+  }
+}
+
+@media (max-width: 420px) {
+  .type-tiles {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 340px) {
+  .brand-text {
+    display: none;
+  }
+}

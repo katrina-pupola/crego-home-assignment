@@ -161,3 +161,20 @@
     display: none;
   }
 }
+
+/* The app name can shrink with "…"; the logo mark and the user area keep their size */
+.brand {
+  min-width: 0;
+}
+
+.brand-mark,
+.user {
+  flex-shrink: 0;
+}
+
+.brand-text {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

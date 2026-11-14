@@ -44,7 +44,10 @@ router.beforeEach((to) => {
     return auth.isLoggedIn ? { name: 'dashboard' } : true
   }
   if (!auth.isLoggedIn) {
-    return { name: 'login', query: { redirect: to.fullPath } }
+    // A token that is still stored but past its expiry means the session ended
+    const expired = auth.token !== null
+    if (expired) auth.logout()
+    return { name: 'login', query: { redirect: to.fullPath, ...(expired ? { expired: '1' } : {}) } }
   }
   return true
 })

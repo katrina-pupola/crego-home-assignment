@@ -1,0 +1,245 @@
+/* Phone layout. Imported last so these rules override the desktop styles. */
+@media (max-width: 640px) {
+  h1 {
+    font-size: 1.35rem;
+  }
+
+  .container {
+    padding: 1.25rem 1rem 2rem;
+  }
+
+  /* Top bar on two rows: brand and user first, navigation below */
+  .topbar-inner {
+    flex-wrap: wrap;
+    gap: 0.5rem 0.75rem;
+    padding: 0.6rem 1rem;
+  }
+
+  .brand {
+    flex: 1;
+    min-width: 0;
+    font-size: 0.95rem;
+    white-space: nowrap;
+  }
+
+  .user {
+    order: 2;
+    gap: 0.4rem;
+  }
+
+  .topbar nav {
+    order: 3;
+    flex-basis: 100%;
+    overflow-x: auto;
+  }
+
+  .topbar nav a {
+    white-space: nowrap;
+    padding: 0.25rem 0.7rem;
+    font-size: 0.9rem;
+  }
+
+  .btn-ghost {
+    padding: 0.3rem 0.7rem;
+    font-size: 0.9rem;
+  }
+
+  /* Page header: title first, action button full width underneath */
+  .page-header {
+    flex-direction: column;
+    align-items: stretch;
+    margin-bottom: 1.25rem;
+  }
+
+  .page-header .btn {
+    text-align: center;
+  }
+
+  .card {
+    padding: 1.1rem;
+    border-radius: 12px;
+  }
+
+  .empty-state {
+    padding: 2rem 1rem;
+  }
+
+  /* Tables become a compact list: each row is a small block laid out with grid areas */
+  .card.table-wrap {
+    padding: 0;
+  }
+
+  .table-wrap table,
+  .table-wrap tbody {
+    display: block;
+  }
+
+  .table-wrap thead {
+    display: none;
+  }
+
+  .table-wrap tr {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0.2rem 0.75rem;
+    padding: 0.9rem 1rem;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .table-wrap tbody tr:last-child {
+    border-bottom: 0;
+  }
+
+  .table-wrap td {
+    display: block;
+    padding: 0;
+    border: 0;
+  }
+
+  /* Small inline label, e.g. "Submitted 14 Nov 2026" */
+  .table-wrap td[data-label]::before {
+    content: attr(data-label) ' ';
+    color: var(--color-muted);
+  }
+
+  .cell-method {
+    white-space: normal;
+  }
+
+  .cell-date,
+  .cell-decided,
+  .cell-comment {
+    grid-column: 1 / -1;
+    font-size: 0.85rem;
+  }
+
+  .cell-comment {
+    max-width: none;
+  }
+
+  /* Modal buttons share the full width */
+  .dialog-actions .btn {
+    flex: 1;
+  }
+
+  /* Login and register: short intro so the form is visible without scrolling */
+  .auth-layout {
+    margin: 0.5rem 0;
+  }
+
+  .auth-intro,
+  .auth-form {
+    padding: 1.5rem;
+  }
+
+  .auth-brand {
+    margin-bottom: 0.75rem;
+  }
+
+  .auth-intro h2 {
+    font-size: 1.25rem;
+    margin-bottom: 0;
+  }
+
+  .auth-intro > p:not(.auth-brand),
+  .auth-points {
+    display: none;
+  }
+
+  /* Smaller timeline text so all three steps fit side by side */
+  .timeline-label {
+    font-size: 0.8rem;
+  }
+
+  .timeline-detail {
+    font-size: 0.7rem;
+  }
+
+  .pcard {
+    padding: 1.1rem 1.2rem;
+  }
+}
+
+/* Back Office only */
+@media (max-width: 640px) {
+  /* The logo already links to the queue, so the single nav link is dropped */
+  .topbar nav {
+    display: none;
+  }
+
+  /* Status tabs scroll sideways without a visible scrollbar; the fade hints at more tabs */
+  .tabs {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+    mask-image: linear-gradient(to right, #000 85%, transparent);
+  }
+
+  .tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .tab {
+    white-space: nowrap;
+    padding: 0.55rem 0.8rem;
+  }
+
+  /* Queue rows: client and status on top, method below, date and link at the bottom */
+  .table-wrap .cell-id {
+    display: none;
+  }
+
+  .table-wrap .cell-client {
+    grid-row: 1;
+    grid-column: 1;
+  }
+
+  .table-wrap .cell-status {
+    grid-row: 1;
+    grid-column: 2;
+  }
+
+  .table-wrap .cell-method {
+    grid-column: 1 / -1;
+    font-size: 0.9rem;
+  }
+
+  .table-wrap .cell-date {
+    grid-column: 1;
+    align-self: center;
+  }
+
+  .table-wrap .cell-action {
+    grid-column: 2;
+    text-align: right;
+  }
+
+  .cell-action .btn-link {
+    padding: 0;
+  }
+
+  .table-wrap tbody tr:active {
+    background: var(--color-bg);
+  }
+
+  .pagination {
+    flex-direction: column;
+    align-items: stretch;
+    text-align: center;
+  }
+
+  .pagination .actions .btn {
+    flex: 1;
+  }
+
+  .bo-tag {
+    font-size: 0.6rem;
+  }
+}
+
+@media (max-width: 400px) {
+  /* Very narrow screens: logo mark and Back Office tag only */
+  .brand-text {
+    display: none;
+  }
+}

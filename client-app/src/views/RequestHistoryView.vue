@@ -51,16 +51,18 @@ onMounted(async () => {
       </thead>
       <tbody>
         <tr v-for="request in requests" :key="request.id">
-          <td>{{ formatDate(request.createdAt) }}</td>
+          <td class="cell-date" data-label="Submitted">{{ formatDate(request.createdAt) }}</td>
           <td class="cell-method">
             <span aria-hidden="true">{{
               request.proposedMethod.type === 'CARD' ? '💳' : '🏦'
             }}</span>
             {{ describeMethod(request.proposedMethod) }}
           </td>
-          <td><StatusBadge :status="request.status" /></td>
-          <td>{{ formatDate(request.reviewedAt) }}</td>
-          <td class="cell-comment">{{ request.reviewComment ?? '—' }}</td>
+          <td class="cell-status"><StatusBadge :status="request.status" /></td>
+          <td class="cell-decided" data-label="Decided">{{ formatDate(request.reviewedAt) }}</td>
+          <td class="cell-comment" data-label="Reviewer's comment">
+            {{ request.reviewComment ?? '—' }}
+          </td>
         </tr>
       </tbody>
     </table>

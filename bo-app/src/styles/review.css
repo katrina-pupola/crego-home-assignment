@@ -1,0 +1,206 @@
+/* Back Office: queue tabs, pagination, request comparison and decision panel */
+.bo-tag {
+  padding: 0.1rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  background: rgb(255 255 255 / 0.15);
+}
+
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.tab {
+  padding: 0.6rem 1rem;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  background: none;
+  font: inherit;
+  font-weight: 500;
+  color: var(--color-muted);
+  cursor: pointer;
+}
+
+.tab:hover {
+  color: var(--color-text);
+}
+
+.tab.active {
+  color: var(--color-primary);
+  border-bottom-color: var(--color-primary);
+}
+
+.row-link {
+  cursor: pointer;
+}
+
+.cell-client strong,
+.cell-client .muted {
+  display: block;
+}
+
+.cell-client .muted {
+  font-size: 0.85rem;
+}
+
+.pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.85rem 1.1rem;
+  border-top: 1px solid var(--color-border);
+  font-size: 0.9rem;
+}
+
+.pagination .actions {
+  margin: 0;
+}
+
+.back-link {
+  display: inline-block;
+  margin-bottom: 1rem;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.title-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.title-row h1 {
+  margin: 0;
+}
+
+/* Current vs proposed method, side by side */
+.comparison {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  gap: 1.25rem;
+  align-items: center;
+}
+
+.comparison-arrow {
+  font-size: 1.75rem;
+  color: var(--color-muted);
+}
+
+.comparison .section-label {
+  margin-top: 0;
+}
+
+.changes {
+  margin: 1.5rem 0 0;
+  padding: 0;
+  list-style: none;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+}
+
+.changes li {
+  display: grid;
+  grid-template-columns: 8rem minmax(0, 1fr);
+  gap: 1rem;
+  align-items: baseline;
+  padding: 0.65rem 1rem;
+}
+
+.changes li + li {
+  border-top: 1px solid var(--color-border);
+}
+
+.change-field {
+  color: var(--color-muted);
+  font-size: 0.85rem;
+}
+
+/* Old value, arrow and new value read as one line; wraps on narrow screens */
+.change-values {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 0.6rem;
+}
+
+.change-arrow {
+  color: var(--color-muted);
+}
+
+.changes .old {
+  color: var(--color-muted);
+  text-decoration: line-through;
+}
+
+.changes .new {
+  font-weight: 600;
+  padding: 0 0.4rem;
+  border-radius: 4px;
+  background: var(--color-success-bg);
+  color: var(--color-success);
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  gap: 1.25rem;
+  align-items: start;
+}
+
+.client-info dl {
+  margin: 0;
+}
+
+.client-info div {
+  padding: 0.5rem 0;
+}
+
+.client-info div + div {
+  border-top: 1px solid var(--color-border);
+}
+
+.client-info dt {
+  color: var(--color-muted);
+  font-size: 0.85rem;
+}
+
+.client-info dd {
+  margin: 0;
+  font-weight: 600;
+  word-break: break-word;
+}
+
+.decision-actions {
+  display: flex;
+  gap: 0.6rem;
+}
+
+.decision-actions .btn {
+  flex: 1;
+}
+
+@media (max-width: 860px) {
+  .detail-grid,
+  .comparison {
+    grid-template-columns: 1fr;
+  }
+
+  .comparison-arrow {
+    transform: rotate(90deg);
+    justify-self: center;
+  }
+
+  .changes li {
+    grid-template-columns: 1fr;
+    gap: 0.25rem;
+  }
+}
