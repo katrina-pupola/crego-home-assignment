@@ -2,10 +2,12 @@ package com.crego.backend.changerequest;
 
 import com.crego.backend.auth.BoUserRepository;
 import com.crego.backend.common.PageResponse;
+import com.crego.backend.notification.ChangeRequestDecided;
 import com.crego.backend.paymentmethod.PaymentMethod;
 import com.crego.backend.paymentmethod.PaymentMethodRepository;
 import com.crego.backend.paymentmethod.PaymentMethodStatus;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -27,6 +29,7 @@ public class ChangeRequestReviewService {
     private final ChangeRequestRepository changeRequestRepository;
     private final PaymentMethodRepository paymentMethodRepository;
     private final BoUserRepository boUserRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     /** Newest first; all statuses when status is null. */
     @Transactional(readOnly = true)
@@ -82,6 +85,11 @@ public class ChangeRequestReviewService {
         changeRequest.setReviewer(boUserRepository.getReferenceById(reviewerId));
         changeRequest.setReviewComment(comment == null || comment.isBlank() ? null : comment.trim());
         changeRequest.setReviewedAt(Instant.now());
+
+        // Emailed only if this transaction commits, i.e. the decision was really saved
+        eventPublisher.publishEvent(new ChangeRequestDecided(changeRequest.getClient().getEmail(),
+                changeRequest.getClient().getFullName(), status == ChangeRequestStatus.APPROVED,
+                changeRequest.getReviewComment()));
     }
 
     private ChangeRequest findOrThrow(long id) {

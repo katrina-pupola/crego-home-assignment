@@ -1,7 +1,10 @@
 package com.crego.backend.changerequest;
 
+import com.crego.backend.ApiTestSupport.RegisteredClient;
 import com.crego.backend.IntegrationTest;
+import com.crego.backend.RecordingMailSender;
 import org.junit.jupiter.api.Test;
+import com.crego.backend.RecordingMailSender.SentEmail;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -13,6 +16,7 @@ import static com.crego.backend.ApiTestSupport.bearer;
 import static com.crego.backend.ApiTestSupport.json;
 import static com.crego.backend.ApiTestSupport.loginBo;
 import static com.crego.backend.ApiTestSupport.registerNewClient;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -25,9 +29,13 @@ class ChangeRequestFlowIntegrationTest {
     @Autowired
     private MockMvc mvc;
 
+    @Autowired
+    private RecordingMailSender mail;
+
     @Test
     void approvedChangeBecomesTheClientsActiveMethod() throws Exception {
-        String clientToken = registerNewClient(mvc);
+        RegisteredClient client = registerNewClient(mvc, mail);
+        String clientToken = client.token();
 
         mvc.perform(post("/api/client/payment-method")
                         .header(HttpHeaders.AUTHORIZATION, bearer(clientToken))
@@ -69,6 +77,11 @@ class ChangeRequestFlowIntegrationTest {
                 .andExpect(jsonPath("$[0].status").value("APPROVED"))
                 .andExpect(jsonPath("$[0].reviewComment").value("Verified"));
 
+        // The client is also told by email
+        SentEmail email = mail.lastSentTo(client.email()).orElseThrow();
+        assertThat(email.subject()).isEqualTo("Your payment method change was approved");
+        assertThat(email.text()).contains("Comment: Verified");
+
         // Deciding the same request again is a conflict
         mvc.perform(post("/api/bo/change-requests/{id}/reject", requestId)
                         .header(HttpHeaders.AUTHORIZATION, bearer(boToken))
@@ -78,7 +91,8 @@ class ChangeRequestFlowIntegrationTest {
 
     @Test
     void rejectedChangeKeepsTheCurrentMethodAndShowsTheReason() throws Exception {
-        String clientToken = registerNewClient(mvc);
+        RegisteredClient client = registerNewClient(mvc, mail);
+        String clientToken = client.token();
         mvc.perform(post("/api/client/payment-method")
                         .header(HttpHeaders.AUTHORIZATION, bearer(clientToken))
                         .contentType(MediaType.APPLICATION_JSON).content(CARD_JSON))
@@ -102,5 +116,9 @@ class ChangeRequestFlowIntegrationTest {
                         .header(HttpHeaders.AUTHORIZATION, bearer(clientToken)))
                 .andExpect(jsonPath("$[0].status").value("REJECTED"))
                 .andExpect(jsonPath("$[0].reviewComment").value("IBAN owner does not match"));
+
+        SentEmail email = mail.lastSentTo(client.email()).orElseThrow();
+        assertThat(email.subject()).isEqualTo("Your payment method change was rejected");
+        assertThat(email.text()).contains("Reason: IBAN owner does not match");
     }
 }

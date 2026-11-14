@@ -40,8 +40,14 @@ export const useAuthStore = defineStore('auth', () => {
     setToken((await api.login(email, password)).token)
   }
 
+  // Registering doesn't log in yet: the client confirms the email first
   async function register(fullName: string, email: string, password: string) {
-    setToken((await api.register(fullName, email, password)).token)
+    return (await api.register(fullName, email, password)).email
+  }
+
+  // Clicking the email link confirms the address and logs the client in
+  async function verifyEmail(verificationToken: string) {
+    setToken((await api.verifyEmail(verificationToken)).token)
   }
 
   async function loadProfile() {
@@ -54,5 +60,16 @@ export const useAuthStore = defineStore('auth', () => {
     localStorage.removeItem(TOKEN_KEY)
   }
 
-  return { token, profile, expiresAt, isLoggedIn, userId, login, register, loadProfile, logout }
+  return {
+    token,
+    profile,
+    expiresAt,
+    isLoggedIn,
+    userId,
+    login,
+    register,
+    verifyEmail,
+    loadProfile,
+    logout,
+  }
 })

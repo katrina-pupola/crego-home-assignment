@@ -17,11 +17,24 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     private final AuthService authService;
+    private final EmailVerificationService emailVerificationService;
 
     @PostMapping("/client/register")
     @ResponseStatus(HttpStatus.CREATED)
-    public TokenResponse registerClient(@Valid @RequestBody RegisterRequest request) {
+    public RegistrationResponse registerClient(@Valid @RequestBody RegisterRequest request) {
         return authService.registerClient(request);
+    }
+
+    @PostMapping("/client/verify")
+    public TokenResponse verifyEmail(@Valid @RequestBody VerifyEmailRequest request) {
+        return emailVerificationService.verify(request.token());
+    }
+
+    // Always 202, whether or not the email exists
+    @PostMapping("/client/resend-verification")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public void resendVerification(@Valid @RequestBody ResendVerificationRequest request) {
+        emailVerificationService.resend(request.email());
     }
 
     @PostMapping("/client/login")

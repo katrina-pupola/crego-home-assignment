@@ -69,7 +69,7 @@ class SecurityIntegrationTest {
     @Test
     void staffCredentialsDoNotWorkOnClientLogin() throws Exception {
         mvc.perform(post("/api/auth/client/login").contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"email\": \"admin@crego.test\", \"password\": \"admin123\"}"))
+                        .content("{\"email\": \"admin@crego.test\", \"password\": \"Admin-Review-2026\"}"))
                 .andExpect(status().isUnauthorized());
     }
 }

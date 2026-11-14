@@ -4,6 +4,7 @@ import com.jayway.jsonpath.JsonPath;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultActions;
 
 import java.util.UUID;
 
@@ -23,23 +24,38 @@ public final class ApiTestSupport {
     private ApiTestSupport() {
     }
 
+    public record RegisteredClient(String email, String token) {
+    }
+
     /** Registers a client with a unique email, so tests never depend on each other's data. */
-    public static String registerNewClient(MockMvc mvc) throws Exception {
+    public static String registerUnverifiedClient(MockMvc mvc) throws Exception {
         String email = "test-" + UUID.randomUUID() + "@crego.test";
         String body = """
                 {"fullName": "Test Client", "email": "%s", "password": "Secret-Pass-123"}
                 """.formatted(email);
-        return token(mvc.perform(post("/api/auth/client/register").contentType(MediaType.APPLICATION_JSON).content(body))
-                .andExpect(status().isCreated())
-                .andReturn());
+        mvc.perform(post("/api/auth/client/register").contentType(MediaType.APPLICATION_JSON).content(body))
+                .andExpect(status().isCreated());
+        return email;
+    }
+
+    /** Registers a client and clicks the link from the verification email, like a real user. */
+    public static RegisteredClient registerNewClient(MockMvc mvc, RecordingMailSender mail) throws Exception {
+        String email = registerUnverifiedClient(mvc);
+        String token = token(verify(mvc, mail.verificationToken(email)).andExpect(status().isOk()).andReturn());
+        return new RegisteredClient(email, token);
+    }
+
+    public static ResultActions verify(MockMvc mvc, String verificationToken) throws Exception {
+        return mvc.perform(post("/api/auth/client/verify").contentType(MediaType.APPLICATION_JSON)
+                .content("{\"token\": \"%s\"}".formatted(verificationToken)));
     }
 
     public static String loginBo(MockMvc mvc) throws Exception {
-        return login(mvc, "/api/auth/bo/login", "admin@crego.test", "admin123");
+        return login(mvc, "/api/auth/bo/login", "admin@crego.test", "Admin-Review-2026");
     }
 
     public static String loginDemoClient(MockMvc mvc) throws Exception {
-        return login(mvc, "/api/auth/client/login", "demo@crego.test", "demo123");
+        return login(mvc, "/api/auth/client/login", "demo@crego.test", "Demo-Client-2026");
     }
 
     public static String bearer(String token) {

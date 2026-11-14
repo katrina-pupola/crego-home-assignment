@@ -31,8 +31,8 @@ async function submit() {
 
   submitting.value = true
   try {
-    await auth.register(form.fullName, form.email, form.password)
-    await router.push('/')
+    const email = await auth.register(form.fullName, form.email, form.password)
+    await router.push({ name: 'check-email', query: { email } })
   } catch (e) {
     const apiError = toApiError(e)
     error.value = apiError.message

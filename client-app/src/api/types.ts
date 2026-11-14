@@ -9,6 +9,10 @@ export interface TokenResponse {
   expiresAt: string
 }
 
+export interface RegistrationResponse {
+  email: string
+}
+
 export interface ClientProfile {
   id: number
   email: string
@@ -52,5 +56,6 @@ export interface ProblemDetail {
   status: number
   title?: string
   detail?: string
+  code?: string
   errors?: Record<string, string>
 }

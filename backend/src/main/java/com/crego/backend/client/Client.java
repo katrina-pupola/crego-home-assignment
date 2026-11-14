@@ -34,8 +34,15 @@ public class Client {
     @Column(nullable = false, updatable = false)
     private Instant createdAt;
 
+    // Null until the client clicks the link in the verification email
+    private Instant emailVerifiedAt;
+
     @PrePersist
     void onCreate() {
         createdAt = Instant.now();
+    }
+
+    public boolean isEmailVerified() {
+        return emailVerifiedAt != null;
     }
 }

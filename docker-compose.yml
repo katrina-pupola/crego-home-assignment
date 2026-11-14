@@ -1,3 +1,5 @@
+# Whole system: docker compose up --build
+# Database and test inbox only (for local development): docker compose up -d db mailpit
 services:
   db:
     image: postgres:17
@@ -6,9 +8,53 @@ services:
       POSTGRES_USER: crego
       POSTGRES_PASSWORD: crego
     ports:
-      - "5433:5432"
+      - "${DB_PORT:-5433}:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U crego -d crego"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  # Test inbox: catches every email the backend sends; open http://localhost:8025
+  mailpit:
+    image: axllent/mailpit:v1.27
+    ports:
+      - "${MAILPIT_PORT:-8025}:8025"
+      - "${MAILPIT_SMTP_PORT:-1025}:1025"
+
+  backend:
+    build: ./backend
+    environment:
+      # Inside Docker other services are reached by their service name, not localhost
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/crego
+      MAIL_HOST: mailpit
+      MAIL_PORT: 1025
+      # Links in emails open the client app in the reviewer's browser
+      CLIENT_APP_URL: http://localhost:${CLIENT_PORT:-5173}
+      JWT_SECRET: ${JWT_SECRET:-dev-only-secret-change-me-0123456789abcdef}
+    ports:
+      - "${BACKEND_PORT:-8080}:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+      mailpit:
+        condition: service_started
+
+  client-app:
+    build: ./client-app
+    ports:
+      - "${CLIENT_PORT:-5173}:80"
+    depends_on:
+      - backend
+
+  bo-app:
+    build: ./bo-app
+    ports:
+      - "${BO_PORT:-5174}:80"
+    depends_on:
+      - backend
 
 volumes:
   pgdata:

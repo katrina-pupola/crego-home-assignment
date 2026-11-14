@@ -70,3 +70,19 @@
     padding: 1.75rem;
   }
 }
+
+/* Email confirmation: resend button, note and separator */
+.resend {
+  margin-bottom: 1rem;
+}
+
+.small-note {
+  font-size: 0.85rem;
+  margin: 0.5rem 0 0;
+}
+
+.divider {
+  border: 0;
+  border-top: 1px solid var(--color-border);
+  margin: 1.25rem 0;
+}

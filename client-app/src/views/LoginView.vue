@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
 import AuthLayout from '@/components/AuthLayout.vue'
 import FormField from '@/components/FormField.vue'
+import ResendVerification from '@/components/ResendVerification.vue'
 import { toApiError } from '@/api/errors'
 import { useAuthStore } from '@/stores/auth'
 
@@ -13,6 +14,7 @@ const router = useRouter()
 const email = ref('')
 const password = ref('')
 const error = ref('')
+const notVerified = ref(false)
 const submitting = ref(false)
 const sessionExpired = route.query.expired === '1'
 
@@ -26,12 +28,15 @@ function redirectTarget(): string {
 
 async function submit() {
   error.value = ''
+  notVerified.value = false
   submitting.value = true
   try {
     await auth.login(email.value, password.value)
     await router.push(redirectTarget())
   } catch (e) {
-    error.value = toApiError(e).message
+    const apiError = toApiError(e)
+    error.value = apiError.message
+    notVerified.value = apiError.code === 'EMAIL_NOT_VERIFIED'
   } finally {
     submitting.value = false
   }
@@ -45,7 +50,12 @@ async function submit() {
     <p v-if="sessionExpired && !error" class="alert alert-info">
       Your session expired. Please log in again.
     </p>
-    <p v-if="error" class="alert alert-error" role="alert">{{ error }}</p>
+    <template v-if="notVerified">
+      <p class="alert alert-info" role="alert">{{ error }}</p>
+      <ResendVerification :email="email" />
+      <hr class="divider" />
+    </template>
+    <p v-else-if="error" class="alert alert-error" role="alert">{{ error }}</p>
 
     <form novalidate @submit.prevent="submit">
       <FormField

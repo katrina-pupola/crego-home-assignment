@@ -5,12 +5,24 @@ import type {
   ClientProfile,
   PaymentMethodRequest,
   PaymentMethodResponse,
+  RegistrationResponse,
   TokenResponse,
 } from './types'
 
+/** Creates the account and sends a verification email; no token until the link is clicked. */
 export async function register(fullName: string, email: string, password: string) {
-  return (await http.post<TokenResponse>('/auth/client/register', { fullName, email, password }))
-    .data
+  return (
+    await http.post<RegistrationResponse>('/auth/client/register', { fullName, email, password })
+  ).data
+}
+
+/** Exchanges the token from the email link for a login token. */
+export async function verifyEmail(token: string) {
+  return (await http.post<TokenResponse>('/auth/client/verify', { token })).data
+}
+
+export async function resendVerification(email: string) {
+  await http.post('/auth/client/resend-verification', { email })
 }
 
 export async function login(email: string, password: string) {

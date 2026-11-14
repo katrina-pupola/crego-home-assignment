@@ -3,6 +3,7 @@ package com.crego.backend.changerequest;
 import com.crego.backend.auth.BoUser;
 import com.crego.backend.auth.BoUserRepository;
 import com.crego.backend.client.Client;
+import com.crego.backend.notification.ChangeRequestDecided;
 import com.crego.backend.paymentmethod.CardBrand;
 import com.crego.backend.paymentmethod.MethodData;
 import com.crego.backend.paymentmethod.PaymentMethod;
@@ -19,6 +20,7 @@ import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -27,6 +29,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
@@ -43,6 +46,8 @@ class ChangeRequestReviewServiceTest {
     private PaymentMethodRepository paymentMethodRepository;
     @Mock
     private BoUserRepository boUserRepository;
+    @Mock
+    private ApplicationEventPublisher eventPublisher;
 
     @InjectMocks
     private ChangeRequestReviewService service;
@@ -103,6 +108,8 @@ class ChangeRequestReviewServiceTest {
         assertThat(changeRequest.getReviewComment()).isEqualTo("Verified");
         assertThat(changeRequest.getReviewedAt()).isNotNull();
         assertThat(result.reviewerName()).isEqualTo("Crego Admin");
+        verify(eventPublisher).publishEvent(
+                new ChangeRequestDecided("anna@crego.test", "Anna Ozola", true, "Verified"));
     }
 
     @Test

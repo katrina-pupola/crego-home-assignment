@@ -17,6 +17,6 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @SpringBootTest
 @AutoConfigureMockMvc
-@Import(TestcontainersConfig.class)
+@Import({TestcontainersConfig.class, TestMailConfig.class})
 public @interface IntegrationTest {
 }

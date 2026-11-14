@@ -4,6 +4,8 @@ import { useAuthStore } from '@/stores/auth'
 declare module 'vue-router' {
   interface RouteMeta {
     guestOnly?: boolean
+    /** Open to everyone, logged in or not (e.g. the link from the verification email) */
+    public?: boolean
   }
 }
 
@@ -21,6 +23,18 @@ const router = createRouter({
       name: 'register',
       component: () => import('@/views/RegisterView.vue'),
       meta: { guestOnly: true },
+    },
+    {
+      path: '/check-email',
+      name: 'check-email',
+      component: () => import('@/views/CheckEmailView.vue'),
+      meta: { guestOnly: true },
+    },
+    {
+      path: '/verify',
+      name: 'verify',
+      component: () => import('@/views/VerifyEmailView.vue'),
+      meta: { public: true },
     },
     { path: '/', name: 'dashboard', component: () => import('@/views/DashboardView.vue') },
     {
@@ -40,6 +54,9 @@ const router = createRouter({
 // Logged-out users go to login; logged-in users skip login and register
 router.beforeEach((to) => {
   const auth = useAuthStore()
+  if (to.meta.public) {
+    return true
+  }
   if (to.meta.guestOnly) {
     return auth.isLoggedIn ? { name: 'dashboard' } : true
   }

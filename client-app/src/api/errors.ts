@@ -3,6 +3,8 @@ import type { ProblemDetail } from './types'
 
 export interface ApiError {
   status: number | null
+  /** Machine-readable reason from the backend, e.g. "EMAIL_NOT_VERIFIED" */
+  code: string | null
   message: string
   fieldErrors: Record<string, string>
 }
@@ -10,11 +12,17 @@ export interface ApiError {
 /** Turns any thrown error into a message plus per-field errors from the backend's ProblemDetail. */
 export function toApiError(error: unknown): ApiError {
   if (!axios.isAxiosError(error)) {
-    return { status: null, message: 'Something went wrong. Please try again.', fieldErrors: {} }
+    return {
+      status: null,
+      code: null,
+      message: 'Something went wrong. Please try again.',
+      fieldErrors: {},
+    }
   }
   if (!error.response) {
     return {
       status: null,
+      code: null,
       message: 'Cannot reach the server. Please try again later.',
       fieldErrors: {},
     }
@@ -22,11 +30,12 @@ export function toApiError(error: unknown): ApiError {
 
   const status = error.response.status
   const problem = error.response.data as Partial<ProblemDetail> | undefined
+  const code = problem?.code ?? null
   const fieldErrors = problem?.errors ?? {}
   if (Object.keys(fieldErrors).length > 0) {
-    return { status, message: 'Please correct the highlighted fields.', fieldErrors }
+    return { status, code, message: 'Please correct the highlighted fields.', fieldErrors }
   }
-  return { status, message: problem?.detail ?? fallbackMessage(status), fieldErrors }
+  return { status, code, message: problem?.detail ?? fallbackMessage(status), fieldErrors }
 }
 
 function fallbackMessage(status: number): string {
