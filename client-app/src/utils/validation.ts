@@ -1,7 +1,7 @@
 // Same rules as the backend, so most mistakes are caught before submitting.
 // The backend still validates everything; this is only for faster feedback.
 
-import type { PaymentMethodRequest } from '@/api/types'
+import type { CardBrand, PaymentMethodRequest } from '@/api/types'
 
 export function normalizeCardNumber(raw: string): string {
   return raw.replace(/[\s-]/g, '')
@@ -24,6 +24,18 @@ export function isValidCardNumber(raw: string): boolean {
     doubleIt = !doubleIt
   }
   return sum % 10 === 0
+}
+
+/** Same prefix rules as the backend's CardBrand.detect; used for the live card preview. */
+export function detectCardBrand(digits: string): CardBrand {
+  const firstTwo = Number(digits.slice(0, 2))
+  const firstFour = Number(digits.slice(0, 4))
+  if (digits.startsWith('4')) return 'VISA'
+  if (firstTwo === 34 || firstTwo === 37) return 'AMEX'
+  if ((firstTwo >= 51 && firstTwo <= 55) || (firstFour >= 2221 && firstFour <= 2720)) {
+    return 'MASTERCARD'
+  }
+  return 'OTHER'
 }
 
 export function normalizeIban(raw: string): string {

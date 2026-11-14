@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
+import AuthLayout from '@/components/AuthLayout.vue'
 import FormField from '@/components/FormField.vue'
 import { toApiError } from '@/api/errors'
 import { useAuthStore } from '@/stores/auth'
@@ -38,8 +39,9 @@ async function submit() {
 </script>
 
 <template>
-  <section class="auth-card card">
-    <h1>Log in</h1>
+  <AuthLayout>
+    <h1>Welcome back</h1>
+    <p class="muted">Log in to manage your payment method.</p>
     <p v-if="sessionExpired && !error" class="alert alert-info">
       Your session expired. Please log in again.
     </p>
@@ -67,5 +69,5 @@ async function submit() {
     </form>
 
     <p class="muted center">No account yet? <RouterLink to="/register">Register</RouterLink></p>
-  </section>
+  </AuthLayout>
 </template>

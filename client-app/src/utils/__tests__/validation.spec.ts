@@ -1,11 +1,24 @@
 import { describe, expect, it } from 'vitest'
 import {
+  detectCardBrand,
   isStrongPassword,
   isValidCardNumber,
   isValidExpiry,
   isValidIban,
   validatePaymentMethod,
 } from '../validation'
+
+describe('detectCardBrand', () => {
+  it.each([
+    ['4111111111111111', 'VISA'],
+    ['5555555555554444', 'MASTERCARD'],
+    ['2221000000000009', 'MASTERCARD'],
+    ['378282246310005', 'AMEX'],
+    ['6011111111111117', 'OTHER'],
+  ])('%s is %s', (number, brand) => {
+    expect(detectCardBrand(number)).toBe(brand)
+  })
+})
 
 describe('isStrongPassword', () => {
   it.each(['Secret-Pass-123', 'Abcdefghij1!'])('accepts %s', (password) => {

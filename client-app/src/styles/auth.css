@@ -1,0 +1,72 @@
+/* Login and register pages: welcome panel next to the form */
+.auth-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  margin: 2rem 0;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgb(15 23 42 / 0.08);
+}
+
+.auth-intro {
+  padding: 2.5rem;
+  color: #fff;
+  background: linear-gradient(150deg, var(--color-primary) 0%, #312e81 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.auth-brand {
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  opacity: 0.85;
+  margin-bottom: 1.5rem;
+}
+
+.auth-intro h2 {
+  font-size: 1.6rem;
+  line-height: 1.25;
+  margin-bottom: 1rem;
+}
+
+.auth-intro p {
+  opacity: 0.9;
+}
+
+.auth-points {
+  list-style: none;
+  padding: 0;
+  margin: 1.25rem 0 0;
+}
+
+.auth-points li {
+  padding: 0.35rem 0;
+}
+
+.auth-points li::before {
+  content: '✓';
+  display: inline-block;
+  width: 1.5rem;
+  font-weight: 700;
+}
+
+.auth-form {
+  padding: 2.5rem;
+}
+
+/* Stack the panels on narrow screens */
+@media (max-width: 720px) {
+  .auth-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .auth-intro,
+  .auth-form {
+    padding: 1.75rem;
+  }
+}

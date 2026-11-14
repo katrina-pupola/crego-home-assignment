@@ -2,6 +2,7 @@
 import { watch } from 'vue'
 import { RouterLink, RouterView, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { initials } from '@/utils/format'
 
 const auth = useAuthStore()
 const router = useRouter()
@@ -24,14 +25,20 @@ function logout() {
 <template>
   <header v-if="auth.isLoggedIn" class="topbar">
     <div class="topbar-inner">
-      <RouterLink to="/" class="brand">Payment Methods</RouterLink>
+      <RouterLink to="/" class="brand">
+        <span class="brand-mark" aria-hidden="true">PM</span>
+        Payment Methods
+      </RouterLink>
       <nav>
         <RouterLink to="/">Dashboard</RouterLink>
         <RouterLink to="/requests">Request history</RouterLink>
       </nav>
       <div class="user">
-        <span v-if="auth.profile">{{ auth.profile.fullName }}</span>
-        <button class="btn btn-link" type="button" @click="logout">Log out</button>
+        <template v-if="auth.profile">
+          <span class="avatar" aria-hidden="true">{{ initials(auth.profile.fullName) }}</span>
+          <span class="user-name">{{ auth.profile.fullName }}</span>
+        </template>
+        <button class="btn btn-ghost" type="button" @click="logout">Log out</button>
       </div>
     </div>
   </header>

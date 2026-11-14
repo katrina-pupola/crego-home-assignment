@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
+import AuthLayout from '@/components/AuthLayout.vue'
 import FormField from '@/components/FormField.vue'
 import { toApiError } from '@/api/errors'
 import { useAuthStore } from '@/stores/auth'
@@ -43,8 +44,9 @@ async function submit() {
 </script>
 
 <template>
-  <section class="auth-card card">
+  <AuthLayout>
     <h1>Create an account</h1>
+    <p class="muted">It only takes a minute.</p>
     <p v-if="error" class="alert alert-error" role="alert">{{ error }}</p>
 
     <form novalidate @submit.prevent="submit">
@@ -95,5 +97,5 @@ async function submit() {
     </form>
 
     <p class="muted center">Already registered? <RouterLink to="/login">Log in</RouterLink></p>
-  </section>
+  </AuthLayout>
 </template>

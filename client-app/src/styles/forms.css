@@ -4,7 +4,7 @@
 }
 
 .field label,
-.segmented legend {
+.type-tiles legend {
   display: block;
   font-weight: 500;
   margin-bottom: 0.35rem;
@@ -18,9 +18,16 @@
   font: inherit;
 }
 
+.field input {
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
+}
+
 .field input:focus {
-  outline: 2px solid var(--color-primary);
-  outline-offset: -1px;
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgb(29 78 216 / 0.15);
 }
 
 .field input[aria-invalid='true'] {
@@ -33,35 +40,62 @@
   margin: 0.25rem 0 0;
 }
 
-.segmented {
+/* Card / bank account choice as two large tiles */
+.type-tiles {
   border: 0;
   padding: 0;
-  margin: 0 0 1.25rem;
+  margin: 0 0 1.5rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.type-tiles legend {
+  grid-column: 1 / -1;
+  padding: 0;
+  margin-bottom: 0.6rem;
+}
+
+.type-tile {
+  position: relative;
   display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-.segmented legend {
-  width: 100%;
-}
-
-.segmented label {
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
-  padding: 0.5rem 1rem;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.9rem 1rem;
+  border: 1.5px solid var(--color-border);
+  border-radius: 12px;
   cursor: pointer;
+  transition:
+    border-color 0.15s,
+    background 0.15s;
 }
 
-.segmented label.selected {
+.type-tile:hover {
+  border-color: #93c5fd;
+}
+
+.type-tile.selected {
   border-color: var(--color-primary);
   background: var(--color-info-bg);
-  color: var(--color-primary);
-  font-weight: 500;
 }
 
-.segmented input {
-  margin-right: 0.35rem;
+/* Keyboard focus is on the hidden radio; show it on the tile */
+.type-tile:has(input:focus-visible) {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.type-tile strong,
+.type-tile .muted {
+  display: block;
+}
+
+.type-tile .muted {
+  font-size: 0.85rem;
+}
+
+.type-tile-icon {
+  font-size: 1.5rem;
 }
 
 .actions {
