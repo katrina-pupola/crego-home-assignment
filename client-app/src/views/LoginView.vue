@@ -14,6 +14,7 @@ const router = useRouter()
 const email = ref('')
 const password = ref('')
 const error = ref('')
+const fieldErrors = ref<Record<string, string>>({})
 const notVerified = ref(false)
 const submitting = ref(false)
 const sessionExpired = route.query.expired === '1'
@@ -28,6 +29,7 @@ function redirectTarget(): string {
 
 async function submit() {
   error.value = ''
+  fieldErrors.value = {}
   notVerified.value = false
   submitting.value = true
   try {
@@ -36,6 +38,7 @@ async function submit() {
   } catch (e) {
     const apiError = toApiError(e)
     error.value = apiError.message
+    fieldErrors.value = apiError.fieldErrors
     notVerified.value = apiError.code === 'EMAIL_NOT_VERIFIED'
   } finally {
     submitting.value = false
@@ -65,6 +68,7 @@ async function submit() {
         type="email"
         autocomplete="email"
         inputmode="email"
+        :error="fieldErrors.email"
       />
       <FormField
         id="password"
@@ -72,6 +76,7 @@ async function submit() {
         label="Password"
         type="password"
         autocomplete="current-password"
+        :error="fieldErrors.password"
       />
       <button class="btn btn-primary btn-block" type="submit" :disabled="submitting">
         {{ submitting ? 'Logging in…' : 'Log in' }}

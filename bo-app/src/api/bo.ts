@@ -9,7 +9,7 @@ import type {
 } from './types'
 
 export async function login(email: string, password: string) {
-  return (await http.post<TokenResponse>('/auth/bo/login', { email, password })).data
+  return (await http.post<TokenResponse>('/auth/bo/login', { email: email.trim(), password })).data
 }
 
 export async function getProfile() {

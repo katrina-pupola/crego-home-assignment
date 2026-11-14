@@ -11,6 +11,11 @@ spring:
     # Mailpit by default: catches every email and shows it at http://localhost:8025
     host: ${MAIL_HOST:localhost}
     port: ${MAIL_PORT:1025}
+    # Give up after 5 s instead of waiting forever on an unresponsive mail server
+    properties:
+      mail.smtp.connectiontimeout: 5000
+      mail.smtp.timeout: 5000
+      mail.smtp.writetimeout: 5000
 server:
   port: 8080
 app:

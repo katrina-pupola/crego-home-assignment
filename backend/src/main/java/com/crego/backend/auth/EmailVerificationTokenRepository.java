@@ -14,6 +14,11 @@ public interface EmailVerificationTokenRepository extends JpaRepository<EmailVer
 
     Optional<EmailVerificationToken> findFirstByClientIdOrderByCreatedAtDesc(Long clientId);
 
+    // Marks the token used only if nobody else did first; returns 0 when another request won
+    @Modifying
+    @Query("update EmailVerificationToken t set t.usedAt = :now where t.id = :id and t.usedAt is null")
+    int markUsed(@Param("id") Long id, @Param("now") Instant now);
+
     // When a new link is sent, older unused links stop working
     @Modifying
     @Query("update EmailVerificationToken t set t.usedAt = :now where t.client.id = :clientId and t.usedAt is null")

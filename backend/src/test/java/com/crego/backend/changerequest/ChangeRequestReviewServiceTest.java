@@ -138,6 +138,17 @@ class ChangeRequestReviewServiceTest {
     }
 
     @Test
+    void cardThatExpiredWhileWaitingCannotBeApproved() {
+        changeRequest.setProposed(new MethodData(PaymentMethodType.CARD, "4444", CardBrand.MASTERCARD,
+                "Anna Ozola", "01/20", null));
+        when(changeRequestRepository.findById(REQUEST_ID)).thenReturn(Optional.of(changeRequest));
+
+        assertStatus(() -> service.approve(REQUEST_ID, REVIEWER_ID, null), HttpStatus.CONFLICT);
+        assertThat(changeRequest.getStatus()).isEqualTo(ChangeRequestStatus.PENDING);
+        verifyNoInteractions(paymentMethodRepository);
+    }
+
+    @Test
     void approvingUnknownRequestReturnsNotFound() {
         when(changeRequestRepository.findById(REQUEST_ID)).thenReturn(Optional.empty());
 

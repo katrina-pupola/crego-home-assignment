@@ -13,6 +13,7 @@ const router = useRouter()
 const email = ref('')
 const password = ref('')
 const error = ref('')
+const fieldErrors = ref<Record<string, string>>({})
 const submitting = ref(false)
 const sessionExpired = route.query.expired === '1'
 
@@ -26,12 +27,15 @@ function redirectTarget(): string {
 
 async function submit() {
   error.value = ''
+  fieldErrors.value = {}
   submitting.value = true
   try {
     await auth.login(email.value, password.value)
     await router.push(redirectTarget())
   } catch (e) {
-    error.value = toApiError(e).message
+    const apiError = toApiError(e)
+    error.value = apiError.message
+    fieldErrors.value = apiError.fieldErrors
   } finally {
     submitting.value = false
   }
@@ -55,6 +59,7 @@ async function submit() {
         type="email"
         autocomplete="username"
         inputmode="email"
+        :error="fieldErrors.email"
       />
       <FormField
         id="password"
@@ -62,6 +67,7 @@ async function submit() {
         label="Password"
         type="password"
         autocomplete="current-password"
+        :error="fieldErrors.password"
       />
       <button class="btn btn-primary btn-block" type="submit" :disabled="submitting">
         {{ submitting ? 'Logging in…' : 'Log in' }}

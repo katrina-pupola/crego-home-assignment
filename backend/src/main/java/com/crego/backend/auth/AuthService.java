@@ -12,12 +12,16 @@ import org.springframework.web.ErrorResponseException;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Locale;
+import java.util.Optional;
+import java.util.function.Function;
 
 @Service
 @RequiredArgsConstructor
 public class AuthService {
 
     static final String EMAIL_NOT_VERIFIED = "EMAIL_NOT_VERIFIED";
+    // BCrypt hash of a random value that is no one's password
+    private static final String DUMMY_HASH = "$2a$10$ltHjD11Nx8pTIipOBILgyOd1NSAob9fRE5qzQqoi1sL6jf/jQAAla";
 
     private final ClientRepository clientRepository;
     private final BoUserRepository boUserRepository;
@@ -45,8 +49,8 @@ public class AuthService {
 
     @Transactional(readOnly = true)
     public TokenResponse loginClient(LoginRequest request) {
-        Client client = clientRepository.findByEmail(normalizeEmail(request.email()))
-                .filter(c -> passwordEncoder.matches(request.password(), c.getPasswordHash()))
+        Client client = checkPassword(clientRepository.findByEmail(normalizeEmail(request.email())),
+                Client::getPasswordHash, request.password())
                 .orElseThrow(AuthService::invalidCredentials);
         // Checked after the password, so this answer never reveals anything to someone guessing
         if (!client.isEmailVerified()) {
@@ -60,10 +64,19 @@ public class AuthService {
 
     @Transactional(readOnly = true)
     public TokenResponse loginBoUser(LoginRequest request) {
-        BoUser user = boUserRepository.findByEmail(normalizeEmail(request.email()))
-                .filter(u -> passwordEncoder.matches(request.password(), u.getPasswordHash()))
+        BoUser user = checkPassword(boUserRepository.findByEmail(normalizeEmail(request.email())),
+                BoUser::getPasswordHash, request.password())
                 .orElseThrow(AuthService::invalidCredentials);
         return tokenService.issue(user.getId(), Role.BO);
+    }
+
+    // Runs BCrypt even for unknown emails, so response time does not reveal which emails are registered
+    private <T> Optional<T> checkPassword(Optional<T> user, Function<T, String> hashOf, String rawPassword) {
+        if (user.isEmpty()) {
+            passwordEncoder.matches(rawPassword, DUMMY_HASH);
+            return Optional.empty();
+        }
+        return user.filter(u -> passwordEncoder.matches(rawPassword, hashOf.apply(u)));
     }
 
     // Same error for unknown email and wrong password, so registered emails can't be discovered

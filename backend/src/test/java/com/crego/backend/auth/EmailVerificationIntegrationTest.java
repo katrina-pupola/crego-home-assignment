@@ -2,6 +2,7 @@ package com.crego.backend.auth;
 
 import com.crego.backend.IntegrationTest;
 import com.crego.backend.RecordingMailSender;
+import com.crego.backend.client.ClientRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -32,6 +33,12 @@ class EmailVerificationIntegrationTest {
 
     @Autowired
     private EmailVerificationTokenRepository tokenRepository;
+
+    @Autowired
+    private EmailVerificationService verificationService;
+
+    @Autowired
+    private ClientRepository clientRepository;
 
     @Test
     void clientCanOnlyLogInAfterClickingTheEmailLink() throws Exception {
@@ -70,6 +77,19 @@ class EmailVerificationIntegrationTest {
         tokenRepository.save(stored);
 
         verify(mvc, verificationToken).andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void newLinkMakesTheOldOneStopWorking() throws Exception {
+        String email = registerUnverifiedClient(mvc);
+        String oldToken = mail.verificationToken(email);
+
+        verificationService.sendVerification(clientRepository.findByEmail(email).orElseThrow());
+        String newToken = mail.verificationToken(email);
+
+        assertThat(newToken).isNotEqualTo(oldToken);
+        verify(mvc, oldToken).andExpect(status().isBadRequest());
+        verify(mvc, newToken).andExpect(status().isOk());
     }
 
     @Test

@@ -57,15 +57,19 @@ async function load() {
 }
 
 const showCancelDialog = ref(false)
+const cancelError = ref('')
 
 async function cancelRequest() {
   if (!latestRequest.value) return
   cancelling.value = true
+  cancelError.value = ''
   try {
     await api.cancelChangeRequest(latestRequest.value.id)
     await load()
   } catch (e) {
-    error.value = toApiError(e).message
+    // e.g. staff decided a moment earlier: show why next to the request and load its new state
+    cancelError.value = toApiError(e).message
+    await load()
   } finally {
     cancelling.value = false
     showCancelDialog.value = false
@@ -165,6 +169,8 @@ onUnmounted(stopPolling)
           <p v-if="isPending" class="muted">
             Our team is reviewing your request. This page updates automatically.
           </p>
+
+          <p v-if="cancelError" class="alert alert-error" role="alert">{{ cancelError }}</p>
 
           <div class="actions">
             <button

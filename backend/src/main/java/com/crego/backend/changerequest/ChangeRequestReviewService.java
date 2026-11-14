@@ -1,11 +1,14 @@
 package com.crego.backend.changerequest;
 
 import com.crego.backend.auth.BoUserRepository;
+import com.crego.backend.common.CardExpiries;
 import com.crego.backend.common.PageResponse;
 import com.crego.backend.notification.ChangeRequestDecided;
+import com.crego.backend.paymentmethod.MethodData;
 import com.crego.backend.paymentmethod.PaymentMethod;
 import com.crego.backend.paymentmethod.PaymentMethodRepository;
 import com.crego.backend.paymentmethod.PaymentMethodStatus;
+import com.crego.backend.paymentmethod.PaymentMethodType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
@@ -18,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Instant;
+import java.time.YearMonth;
 import java.util.Locale;
 
 @Service
@@ -52,6 +56,13 @@ public class ChangeRequestReviewService {
     public BoChangeRequestDetail approve(long id, long reviewerId, String comment) {
         ChangeRequest changeRequest = findOrThrow(id);
         requirePending(changeRequest);
+        // The card may have expired while the request waited for review
+        MethodData proposed = changeRequest.getProposed();
+        if (proposed.type() == PaymentMethodType.CARD
+                && !CardExpiries.isValid(proposed.cardExpiry(), YearMonth.now())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                    "The proposed card has expired; reject the request instead");
+        }
         long clientId = changeRequest.getClient().getId();
 
         paymentMethodRepository.findByClientIdAndStatus(clientId, PaymentMethodStatus.ACTIVE)
@@ -63,7 +74,7 @@ public class ChangeRequestReviewService {
         PaymentMethod newMethod = new PaymentMethod();
         newMethod.setClient(changeRequest.getClient());
         newMethod.setStatus(PaymentMethodStatus.ACTIVE);
-        newMethod.setDetails(changeRequest.getProposed());
+        newMethod.setDetails(proposed);
         paymentMethodRepository.save(newMethod);
 
         decide(changeRequest, ChangeRequestStatus.APPROVED, reviewerId, comment);

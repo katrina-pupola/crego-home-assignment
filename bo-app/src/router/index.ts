@@ -31,9 +31,9 @@ const router = createRouter({
 router.beforeEach((to) => {
   const auth = useAuthStore()
   if (to.meta.guestOnly) {
-    return auth.isLoggedIn ? { name: 'queue' } : true
+    return auth.hasValidSession() ? { name: 'queue' } : true
   }
-  if (!auth.isLoggedIn) {
+  if (!auth.hasValidSession()) {
     // A token that is still stored but past its expiry means the session ended
     const expired = auth.token !== null
     if (expired) auth.logout()

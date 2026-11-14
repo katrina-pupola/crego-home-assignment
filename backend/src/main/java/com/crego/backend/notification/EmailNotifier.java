@@ -5,12 +5,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionalEventListener;
 
 /**
  * Sends emails only after the surrounding transaction has committed, so a mail server problem
- * can never undo a registration or a decision. Failures are logged; the client can request a new link.
+ * can never undo a registration or a decision. Sending happens on a background thread, so the
+ * HTTP response never waits for the mail server. Failures are logged; the client can request a new link.
  */
 @Slf4j
 @Component
@@ -22,12 +24,14 @@ public class EmailNotifier {
     private final JavaMailSender mailSender;
     private final AppMailProperties props;
 
+    @Async
     @TransactionalEventListener
     public void onVerificationRequested(VerificationEmailRequested event) {
         String link = props.clientAppUrl() + "/verify?token=" + event.token();
         send(event.email(), EmailTemplates.verification(event.fullName(), link, props.verificationTtl().toHours()));
     }
 
+    @Async
     @TransactionalEventListener
     public void onChangeRequestDecided(ChangeRequestDecided event) {
         send(event.email(), EmailTemplates.decision(event.fullName(), event.approved(), event.comment(),

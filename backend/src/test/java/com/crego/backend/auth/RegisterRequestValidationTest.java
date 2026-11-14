@@ -38,7 +38,8 @@ class RegisterRequestValidationTest {
             "alllowercase-123",  // no uppercase
             "ALLUPPERCASE-123",  // no lowercase
             "NoDigitsHere-!!",   // no digit
-            "NoSpecial12345"     // no special character
+            "NoSpecial12345",    // no special character
+            "Aa1!āāāāāāāāāāāāāāāāāāāāāāāāāāāāāāāāāāā" // 39 characters but 74 bytes (ā takes two)
     })
     void rejectsWeakPasswords(String password) {
         assertThat(validator.validate(request(password)))

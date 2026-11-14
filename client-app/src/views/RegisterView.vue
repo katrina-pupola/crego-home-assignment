@@ -5,7 +5,7 @@ import AuthLayout from '@/components/AuthLayout.vue'
 import FormField from '@/components/FormField.vue'
 import { toApiError } from '@/api/errors'
 import { useAuthStore } from '@/stores/auth'
-import { isStrongPassword, passwordRules } from '@/utils/validation'
+import { isStrongPassword, isWithinPasswordLimit, passwordRules } from '@/utils/validation'
 
 const auth = useAuthStore()
 const router = useRouter()
@@ -20,6 +20,7 @@ function validate(): Record<string, string> {
   if (!form.fullName.trim()) errors.fullName = 'Name is required'
   if (!/^\S+@\S+\.\S+$/.test(form.email)) errors.email = 'Enter a valid email address'
   if (!isStrongPassword(form.password)) errors.password = 'Password does not meet all requirements'
+  else if (!isWithinPasswordLimit(form.password)) errors.password = 'Password is too long'
   if (form.confirmPassword !== form.password) errors.confirmPassword = 'Passwords do not match'
   return errors
 }

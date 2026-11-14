@@ -29,6 +29,11 @@ export const useAuthStore = defineStore('auth', () => {
   // Expiry time in milliseconds, read from the token's "exp" claim
   const expiresAt = computed(() => (payload.value ? payload.value.exp * 1000 : null))
   const isLoggedIn = computed(() => expiresAt.value !== null && expiresAt.value > Date.now())
+  // Checked on every call; a computed would cache the result because Date.now() is not reactive
+  function hasValidSession() {
+    return token.value !== null && expiresAt.value !== null && expiresAt.value > Date.now()
+  }
+
   const userId = computed(() => payload.value?.sub ?? null)
 
   function setToken(value: string) {
@@ -47,7 +52,9 @@ export const useAuthStore = defineStore('auth', () => {
 
   // Clicking the email link confirms the address and logs the client in
   async function verifyEmail(verificationToken: string) {
-    setToken((await api.verifyEmail(verificationToken)).token)
+    const { token: newToken } = await api.verifyEmail(verificationToken)
+    profile.value = null // a different client may have been logged in on this browser
+    setToken(newToken)
   }
 
   async function loadProfile() {
@@ -65,6 +72,7 @@ export const useAuthStore = defineStore('auth', () => {
     profile,
     expiresAt,
     isLoggedIn,
+    hasValidSession,
     userId,
     login,
     register,

@@ -21,7 +21,7 @@ onMounted(async () => {
     return
   }
   try {
-    auth.logout() // in case someone else was logged in on this browser
+    // Replaces any current session only if the link is valid
     await auth.verifyEmail(token)
     await router.replace({ name: 'dashboard' })
   } catch (e) {

@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import {
   detectCardBrand,
   isStrongPassword,
+  isWithinPasswordLimit,
   isValidCardNumber,
   isValidExpiry,
   isValidIban,
@@ -17,6 +18,13 @@ describe('detectCardBrand', () => {
     ['6011111111111117', 'OTHER'],
   ])('%s is %s', (number, brand) => {
     expect(detectCardBrand(number)).toBe(brand)
+  })
+})
+
+describe('isWithinPasswordLimit', () => {
+  it('counts bytes, not characters', () => {
+    expect(isWithinPasswordLimit('Aa1!' + 'a'.repeat(68))).toBe(true) // 72 bytes
+    expect(isWithinPasswordLimit('Aa1!' + 'ā'.repeat(35))).toBe(false) // 39 characters, 74 bytes
   })
 })
 

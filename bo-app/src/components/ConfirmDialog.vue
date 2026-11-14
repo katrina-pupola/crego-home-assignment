@@ -1,6 +1,6 @@
 <!-- Confirmation modal built on the native <dialog>: dims the page, traps focus, closes on Esc -->
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref, useId, watch } from 'vue'
 
 const props = defineProps<{
   open: boolean
@@ -16,6 +16,8 @@ const props = defineProps<{
 const emit = defineEmits<{ confirm: []; cancel: [] }>()
 
 const dialog = ref<HTMLDialogElement | null>(null)
+// Unique per dialog, so screen readers announce the right title when several dialogs exist
+const titleId = useId()
 
 watch(
   () => props.open,
@@ -31,9 +33,15 @@ function onCancelEvent(event: Event) {
   if (!props.busy) emit('cancel')
 }
 
-// A click on the dimmed backdrop (outside the panel) counts as cancel
+// Closes only when both press and release happen on the dimmed backdrop, so dragging a
+// text selection out of a field does not close the dialog
+let pressedOnBackdrop = false
+function onMouseDown(event: MouseEvent) {
+  pressedOnBackdrop = event.target === dialog.value
+}
 function onBackdropClick(event: MouseEvent) {
-  if (event.target === dialog.value && !props.busy) emit('cancel')
+  if (pressedOnBackdrop && event.target === dialog.value && !props.busy) emit('cancel')
+  pressedOnBackdrop = false
 }
 </script>
 
@@ -41,12 +49,13 @@ function onBackdropClick(event: MouseEvent) {
   <dialog
     ref="dialog"
     class="dialog"
-    aria-labelledby="dialog-title"
+    :aria-labelledby="titleId"
     @cancel="onCancelEvent"
+    @mousedown="onMouseDown"
     @click="onBackdropClick"
   >
     <div class="dialog-panel">
-      <h2 id="dialog-title">{{ title }}</h2>
+      <h2 :id="titleId">{{ title }}</h2>
       <p class="muted">{{ message }}</p>
       <!-- Optional extra content, e.g. a comment field -->
       <slot />

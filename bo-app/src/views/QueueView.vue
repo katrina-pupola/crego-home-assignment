@@ -40,16 +40,24 @@ const flash = computed(() => {
   return null
 })
 
+// Each load gets a number; an older response that arrives late (e.g. a background refresh after
+// the user switched tabs) is ignored instead of overwriting the newer result
+let latestLoad = 0
+
 async function load(showSpinner = false) {
+  const thisLoad = ++latestLoad
   if (showSpinner) loading.value = true
   try {
     const status = activeTab.value === 'ALL' ? null : activeTab.value
-    result.value = await api.listRequests(status, page.value)
+    const response = await api.listRequests(status, page.value)
+    if (thisLoad !== latestLoad) return
+    result.value = response
     error.value = ''
   } catch (e) {
+    if (thisLoad !== latestLoad) return
     error.value = toApiError(e).message
   } finally {
-    loading.value = false
+    if (thisLoad === latestLoad) loading.value = false
   }
 }
 

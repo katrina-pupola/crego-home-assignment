@@ -12,7 +12,11 @@ import type {
 /** Creates the account and sends a verification email; no token until the link is clicked. */
 export async function register(fullName: string, email: string, password: string) {
   return (
-    await http.post<RegistrationResponse>('/auth/client/register', { fullName, email, password })
+    await http.post<RegistrationResponse>('/auth/client/register', {
+      fullName,
+      email: email.trim(),
+      password,
+    })
   ).data
 }
 
@@ -22,11 +26,16 @@ export async function verifyEmail(token: string) {
 }
 
 export async function resendVerification(email: string) {
-  await http.post('/auth/client/resend-verification', { email })
+  await http.post('/auth/client/resend-verification', { email: email.trim() })
 }
 
 export async function login(email: string, password: string) {
-  return (await http.post<TokenResponse>('/auth/client/login', { email, password })).data
+  return (
+    await http.post<TokenResponse>('/auth/client/login', {
+      email: email.trim(),
+      password,
+    })
+  ).data
 }
 
 export async function getProfile() {

@@ -67,12 +67,17 @@ export function isValidExpiry(expiry: string, now: Date = new Date()): boolean {
 
 /** Same policy as the backend's RegisterRequest; shown as a live checklist on the register page. */
 export const passwordRules: { label: string; test: (password: string) => boolean }[] = [
-  { label: 'At least 12 characters', test: (p) => p.length >= 12 && p.length <= 72 },
+  { label: 'At least 12 characters', test: (p) => p.length >= 12 },
   { label: 'An uppercase letter', test: (p) => /[A-Z]/.test(p) },
   { label: 'A lowercase letter', test: (p) => /[a-z]/.test(p) },
   { label: 'A digit', test: (p) => /\d/.test(p) },
   { label: 'A special character (e.g. ! # - _)', test: (p) => /[^A-Za-z0-9]/.test(p) },
 ]
+
+/** BCrypt uses at most 72 bytes; letters like "ā" take two, so bytes are counted, not characters. */
+export function isWithinPasswordLimit(password: string): boolean {
+  return new TextEncoder().encode(password).length <= 72
+}
 
 export function isStrongPassword(password: string): boolean {
   return passwordRules.every((rule) => rule.test(password))

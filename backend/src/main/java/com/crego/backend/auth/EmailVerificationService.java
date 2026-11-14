@@ -55,10 +55,12 @@ public class EmailVerificationService {
         Instant now = Instant.now();
         EmailVerificationToken entity = tokenRepository.findByTokenHash(hash(token))
                 .filter(t -> t.isUsable(now))
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                        "This link is invalid or has expired"));
+                .orElseThrow(EmailVerificationService::invalidLink);
+        // Conditional update, so two simultaneous clicks cannot both use the same link
+        if (tokenRepository.markUsed(entity.getId(), now) == 0) {
+            throw invalidLink();
+        }
 
-        entity.setUsedAt(now);
         Client client = entity.getClient();
         if (!client.isEmailVerified()) {
             client.setEmailVerifiedAt(now);
@@ -73,6 +75,10 @@ public class EmailVerificationService {
                 .filter(client -> !client.isEmailVerified())
                 .filter(client -> !sentRecently(client))
                 .ifPresent(this::sendVerification);
+    }
+
+    private static ResponseStatusException invalidLink() {
+        return new ResponseStatusException(HttpStatus.BAD_REQUEST, "This link is invalid or has expired");
     }
 
     private boolean sentRecently(Client client) {

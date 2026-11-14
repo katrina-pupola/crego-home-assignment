@@ -33,6 +33,11 @@ export const useAuthStore = defineStore('auth', () => {
     () => payload.value?.role === 'BO' && expiresAt.value !== null && expiresAt.value > Date.now(),
   )
 
+  // Checked on every call; a computed would cache the result because Date.now() is not reactive
+  function hasValidSession() {
+    return payload.value?.role === 'BO' && expiresAt.value !== null && expiresAt.value > Date.now()
+  }
+
   async function login(email: string, password: string) {
     token.value = (await api.login(email, password)).token
     localStorage.setItem(TOKEN_KEY, token.value)
@@ -48,5 +53,5 @@ export const useAuthStore = defineStore('auth', () => {
     localStorage.removeItem(TOKEN_KEY)
   }
 
-  return { token, profile, expiresAt, isLoggedIn, login, loadProfile, logout }
+  return { token, profile, expiresAt, isLoggedIn, hasValidSession, login, loadProfile, logout }
 })

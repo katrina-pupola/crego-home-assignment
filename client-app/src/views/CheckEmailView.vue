@@ -18,7 +18,7 @@ const email = computed(() => (typeof route.query.email === 'string' ? route.quer
     </p>
     <p class="muted">The link is valid for 24 hours and can be used once.</p>
 
-    <ResendVerification :email="email || undefined" />
+    <ResendVerification :email="email || undefined" start-with-cooldown />
 
     <p class="muted center">Already confirmed? <RouterLink to="/login">Log in</RouterLink></p>
   </AuthLayout>
