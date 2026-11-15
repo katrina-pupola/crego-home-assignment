@@ -71,13 +71,17 @@ class ChangeRequestFlowIntegrationTest {
                         .header(HttpHeaders.AUTHORIZATION, bearer(clientToken)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.method.type").value("BANK_ACCOUNT"))
-                .andExpect(jsonPath("$.method.maskedNumber").value("LV** **** **** 5001"));
+                .andExpect(jsonPath("$.method.maskedNumber").value("LV** **** **** 5001"))
+                // the owner sees their own full IBAN; everywhere else it stays masked
+                .andExpect(jsonPath("$.iban").value("LV80BANK0000435195001"));
 
         mvc.perform(get("/api/client/change-requests")
                         .header(HttpHeaders.AUTHORIZATION, bearer(clientToken)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].status").value("APPROVED"))
-                .andExpect(jsonPath("$[0].reviewComment").value("Verified"));
+                .andExpect(jsonPath("$[0].reviewComment").value("Verified"))
+                .andExpect(jsonPath("$[0].proposedMethod.maskedNumber").value("LV** **** **** 5001"))
+                .andExpect(jsonPath("$[0].iban").doesNotExist());
 
         // The client is also told by email
         SentEmail email = mail.lastSentTo(client.email()).orElseThrow();

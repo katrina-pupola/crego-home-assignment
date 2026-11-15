@@ -25,6 +25,11 @@ export function describeMethod(method: MethodView): string {
   return `Bank account ${method.maskedNumber}`
 }
 
+/** "LV80BANK0000435195001" -> "LV80 BANK 0000 4351 9500 1", the usual way to print an IBAN. */
+export function groupIban(iban: string): string {
+  return iban.replace(/(.{4})(?=.)/g, '$1 ')
+}
+
 const regionNames = new Intl.DisplayNames(['en'], { type: 'region' })
 
 /** "LV" -> "Latvia"; falls back to the code itself. */

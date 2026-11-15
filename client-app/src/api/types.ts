@@ -32,6 +32,8 @@ export interface PaymentMethodResponse {
   id: number
   status: 'ACTIVE' | 'REPLACED'
   method: MethodView
+  /** Full IBAN of the client's own bank account; null for cards (never stored in full) */
+  iban: string | null
   createdAt: string
 }
 

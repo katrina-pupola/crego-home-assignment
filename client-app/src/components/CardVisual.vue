@@ -8,10 +8,11 @@ const props = defineProps<{ method: MethodView }>()
 
 const brandClass = computed(() => `pcard-${(props.method.cardBrand ?? 'OTHER').toLowerCase()}`)
 
-// "**** 1111" -> "•••• •••• •••• 1111"
-const displayNumber = computed(
-  () => `•••• •••• •••• ${props.method.maskedNumber.slice(-4) || '••••'}`,
-)
+// "**** 1111" -> "•••• •••• •••• 1111"; Amex has 15 digits grouped 4-6-5: "•••• •••••• •0005"
+const displayNumber = computed(() => {
+  const last4 = props.method.maskedNumber.slice(-4) || '••••'
+  return props.method.cardBrand === 'AMEX' ? `•••• •••••• •${last4}` : `•••• •••• •••• ${last4}`
+})
 </script>
 
 <template>

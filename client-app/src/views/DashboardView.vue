@@ -144,7 +144,7 @@ onUnmounted(stopPolling)
           <h2>Current payment method</h2>
           <span class="pill pill-active">Active</span>
         </div>
-        <MethodVisual :method="activeMethod.method" />
+        <MethodVisual :method="activeMethod.method" :full-iban="activeMethod.iban" />
         <p class="muted card-footnote">Active since {{ formatDate(activeMethod.createdAt) }}</p>
       </section>
 
