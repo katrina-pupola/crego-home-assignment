@@ -14,8 +14,6 @@ import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtValidators;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
-import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
 
 import javax.crypto.SecretKey;
@@ -30,7 +28,8 @@ public class SecurityConfig {
     static final String ROLE_CLAIM = "role";
 
     @Bean
-    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    SecurityFilterChain securityFilterChain(HttpSecurity http, ExistingAccountJwtConverter jwtConverter)
+            throws Exception {
         http
                 .csrf(csrf -> csrf.disable()) // stateless API, no session cookies
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -42,7 +41,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/bo/**").hasRole(Role.BO.name())
                         .anyRequest().authenticated())
                 .oauth2ResourceServer(oauth2 -> oauth2
-                        .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())));
+                        .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtConverter)));
         return http.build();
     }
 
@@ -63,17 +62,6 @@ public class SecurityConfig {
                 .build();
         decoder.setJwtValidator(JwtValidators.createDefaultWithIssuer(ISSUER)); // checks expiry and issuer
         return decoder;
-    }
-
-    // Maps the token's "role" claim (e.g. CLIENT) to the authority ROLE_CLIENT used by hasRole()
-    private JwtAuthenticationConverter jwtAuthenticationConverter() {
-        JwtGrantedAuthoritiesConverter authorities = new JwtGrantedAuthoritiesConverter();
-        authorities.setAuthoritiesClaimName(ROLE_CLAIM);
-        authorities.setAuthorityPrefix("ROLE_");
-
-        JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
-        converter.setJwtGrantedAuthoritiesConverter(authorities);
-        return converter;
     }
 
     private SecretKey secretKey(JwtProperties props) {
