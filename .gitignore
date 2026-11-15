@@ -1,0 +1,3 @@
+# Local environment settings (may contain secrets) and editor tool folders
+.env
+.qodo/

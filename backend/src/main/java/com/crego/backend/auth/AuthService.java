@@ -19,7 +19,7 @@ import java.util.function.Function;
 @RequiredArgsConstructor
 public class AuthService {
 
-    static final String EMAIL_NOT_VERIFIED = "EMAIL_NOT_VERIFIED";
+    private static final String EMAIL_NOT_VERIFIED = "EMAIL_NOT_VERIFIED";
     // BCrypt hash of a random value that is no one's password
     private static final String DUMMY_HASH = "$2a$10$ltHjD11Nx8pTIipOBILgyOd1NSAob9fRE5qzQqoi1sL6jf/jQAAla";
 

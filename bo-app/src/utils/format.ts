@@ -13,14 +13,6 @@ const brandNames: Record<CardBrand, string> = {
   OTHER: 'Card',
 }
 
-/** e.g. "Visa **** 1111" or "Bank account LV** **** **** 5001". */
-export function describeMethod(method: MethodView): string {
-  if (method.type === 'CARD') {
-    return `${brandNames[method.cardBrand ?? 'OTHER']} ${method.maskedNumber}`
-  }
-  return `Bank account ${method.maskedNumber}`
-}
-
 export const typeLabels: Record<PaymentMethodType, string> = {
   CARD: 'Bank card',
   BANK_ACCOUNT: 'Bank account',

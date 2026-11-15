@@ -1,6 +1,7 @@
 package com.crego.backend;
 
 import com.jayway.jsonpath.JsonPath;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -48,6 +49,21 @@ public final class ApiTestSupport {
     public static ResultActions verify(MockMvc mvc, String verificationToken) throws Exception {
         return mvc.perform(post("/api/auth/client/verify").contentType(MediaType.APPLICATION_JSON)
                 .content("{\"token\": \"%s\"}".formatted(verificationToken)));
+    }
+
+    /** Adds the test Visa card as the client's first payment method. */
+    public static void addCard(MockMvc mvc, String token) throws Exception {
+        mvc.perform(post("/api/client/payment-method").header(HttpHeaders.AUTHORIZATION, bearer(token))
+                        .contentType(MediaType.APPLICATION_JSON).content(CARD_JSON))
+                .andExpect(status().isCreated());
+    }
+
+    /** Requests a change to the test IBAN and returns the new request's id. */
+    public static Integer requestIbanChange(MockMvc mvc, String token) throws Exception {
+        return json(mvc.perform(post("/api/client/change-requests").header(HttpHeaders.AUTHORIZATION, bearer(token))
+                        .contentType(MediaType.APPLICATION_JSON).content(IBAN_JSON))
+                .andExpect(status().isCreated())
+                .andReturn(), "$.id");
     }
 
     public static String loginBo(MockMvc mvc) throws Exception {

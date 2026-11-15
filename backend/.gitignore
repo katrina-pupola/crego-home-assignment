@@ -31,12 +31,3 @@ build/
 
 ### VS Code ###
 .vscode/
-
-node_modules/
-dist/
-target/
-.idea/
-*.iml
-.vscode/
-.qodo/
-.env

@@ -11,7 +11,7 @@ public record MethodView(
         String maskedNumber
 ) {
 
-    public static MethodView of(MethodData data) {
+    public static MethodView from(MethodData data) {
         String masked = data.type() == PaymentMethodType.CARD
                 ? "**** " + data.cardLast4()
                 : Ibans.mask(data.iban());

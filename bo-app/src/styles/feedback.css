@@ -55,27 +55,3 @@
   background: var(--color-bg);
   color: var(--color-muted);
 }
-
-.pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  padding: 0.15rem 0.6rem;
-  border-radius: 999px;
-  font-size: 0.8rem;
-  font-weight: 600;
-}
-
-.pill-active {
-  background: var(--color-success-bg);
-  color: var(--color-success);
-}
-
-/* Small green dot before "Active" */
-.pill-active::before {
-  content: '';
-  width: 0.45rem;
-  height: 0.45rem;
-  border-radius: 50%;
-  background: currentColor;
-}

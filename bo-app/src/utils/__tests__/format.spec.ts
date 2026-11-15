@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { MethodView } from '@/api/types'
-import { countryName, describeMethod, displayNumber, initials } from '../format'
+import { brandName, countryName, displayNumber, initials } from '../format'
 
 const card: MethodView = {
   type: 'CARD',
@@ -28,13 +28,10 @@ describe('displayNumber', () => {
   })
 })
 
-describe('describeMethod', () => {
-  it('names the card brand', () => {
-    expect(describeMethod(card)).toBe('Visa **** 1111')
-  })
-
-  it('labels bank accounts', () => {
-    expect(describeMethod(bankAccount)).toBe('Bank account LV** **** **** 5001')
+describe('brandName', () => {
+  it('names known brands and falls back to "Card"', () => {
+    expect(brandName('VISA')).toBe('Visa')
+    expect(brandName(null)).toBe('Card')
   })
 })
 

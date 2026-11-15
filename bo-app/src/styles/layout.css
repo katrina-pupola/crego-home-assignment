@@ -124,39 +124,7 @@
   margin: 0;
 }
 
-.card-footnote {
-  margin: 1rem 0 0;
-}
-
-.dashboard-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
-  gap: 1.25rem;
-  align-items: start;
-}
-
-.form-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
-  gap: 1.5rem;
-  align-items: start;
-}
-
-.form-aside {
-  position: sticky;
-  top: 5rem;
-}
-
 @media (max-width: 860px) {
-  .dashboard-grid,
-  .form-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .form-aside {
-    position: static;
-  }
-
   .user-name {
     display: none;
   }

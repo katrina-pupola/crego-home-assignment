@@ -117,18 +117,17 @@ final class EmailTemplates {
     }
 
     private static String fallbackLink(String url) {
-        return "<p style=\"margin:0 0 14px;font-size:12px;line-height:18px;color:%s;\">Button not working? "
-                .formatted(MUTED)
-                + "Copy this link into your browser:<br><a href=\"%s\" style=\"color:%s;word-break:break-all;\">%s</a></p>"
-                .formatted(escape(url), BRAND, escape(url));
+        return """
+                <p style="margin:0 0 14px;font-size:12px;line-height:18px;color:%s;">Button not working? Copy this link into your browser:<br><a href="%s" style="color:%s;word-break:break-all;">%s</a></p>
+                """.formatted(MUTED, escape(url), BRAND, escape(url));
     }
 
     private static String statusBadge(boolean approved) {
         String background = approved ? "#ecfdf5" : "#fef2f2";
         String color = approved ? "#047857" : "#b91c1c";
-        return "<span style=\"display:inline-block;margin:0 0 14px;padding:4px 12px;border-radius:999px;"
-                + "background:%s;color:%s;font-size:13px;font-weight:700;\">%s</span>"
-                .formatted(background, color, approved ? "&#10003; Approved" : "&#10005; Rejected");
+        return """
+                <span style="display:inline-block;margin:0 0 14px;padding:4px 12px;border-radius:999px;background:%s;color:%s;font-size:13px;font-weight:700;">%s</span>
+                """.formatted(background, color, approved ? "&#10003; Approved" : "&#10005; Rejected");
     }
 
     private static String quote(String label, String text) {

@@ -3,8 +3,8 @@ package com.crego.backend.changerequest;
 import com.crego.backend.ApiTestSupport.RegisteredClient;
 import com.crego.backend.IntegrationTest;
 import com.crego.backend.RecordingMailSender;
-import org.junit.jupiter.api.Test;
 import com.crego.backend.RecordingMailSender.SentEmail;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -12,10 +12,12 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import static com.crego.backend.ApiTestSupport.CARD_JSON;
 import static com.crego.backend.ApiTestSupport.IBAN_JSON;
+import static com.crego.backend.ApiTestSupport.addCard;
 import static com.crego.backend.ApiTestSupport.bearer;
 import static com.crego.backend.ApiTestSupport.json;
 import static com.crego.backend.ApiTestSupport.loginBo;
 import static com.crego.backend.ApiTestSupport.registerNewClient;
+import static com.crego.backend.ApiTestSupport.requestIbanChange;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -93,15 +95,8 @@ class ChangeRequestFlowIntegrationTest {
     void rejectedChangeKeepsTheCurrentMethodAndShowsTheReason() throws Exception {
         RegisteredClient client = registerNewClient(mvc, mail);
         String clientToken = client.token();
-        mvc.perform(post("/api/client/payment-method")
-                        .header(HttpHeaders.AUTHORIZATION, bearer(clientToken))
-                        .contentType(MediaType.APPLICATION_JSON).content(CARD_JSON))
-                .andExpect(status().isCreated());
-        Integer requestId = json(mvc.perform(post("/api/client/change-requests")
-                        .header(HttpHeaders.AUTHORIZATION, bearer(clientToken))
-                        .contentType(MediaType.APPLICATION_JSON).content(IBAN_JSON))
-                .andExpect(status().isCreated())
-                .andReturn(), "$.id");
+        addCard(mvc, clientToken);
+        Integer requestId = requestIbanChange(mvc, clientToken);
 
         mvc.perform(post("/api/bo/change-requests/{id}/reject", requestId)
                         .header(HttpHeaders.AUTHORIZATION, bearer(loginBo(mvc)))

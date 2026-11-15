@@ -1,39 +1,3 @@
-/* Compact method row, empty states, reviewer comment and tables */
-.method {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  margin-bottom: 0.75rem;
-}
-
-.method-icon {
-  display: grid;
-  place-items: center;
-  width: 2.6rem;
-  height: 2.6rem;
-  border-radius: 10px;
-  font-size: 1.3rem;
-  flex-shrink: 0;
-}
-
-.method-icon.is-card {
-  background: var(--color-info-bg);
-}
-
-.method-icon.is-bank {
-  background: var(--color-success-bg);
-}
-
-.method-title {
-  font-weight: 600;
-  margin: 0;
-}
-
-.method .muted {
-  margin: 0;
-  font-size: 0.9rem;
-}
-
 .empty-state {
   text-align: center;
   padding: 3rem 1.5rem;
@@ -53,10 +17,6 @@
   border-radius: 50%;
   font-size: 1.8rem;
   background: var(--color-info-bg);
-}
-
-.empty-inline {
-  padding: 1rem 0;
 }
 
 .review-comment {
@@ -116,9 +76,4 @@ tbody tr:last-child td {
 
 .cell-method span {
   margin-right: 0.4rem;
-}
-
-.cell-comment {
-  color: var(--color-muted);
-  max-width: 18rem;
 }

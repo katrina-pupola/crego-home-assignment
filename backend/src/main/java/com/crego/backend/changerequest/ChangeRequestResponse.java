@@ -13,8 +13,8 @@ public record ChangeRequestResponse(
         Instant reviewedAt
 ) {
 
-    public static ChangeRequestResponse from(ChangeRequest request) {
-        return new ChangeRequestResponse(request.getId(), request.getStatus(), MethodView.of(request.getProposed()),
+    static ChangeRequestResponse from(ChangeRequest request) {
+        return new ChangeRequestResponse(request.getId(), request.getStatus(), MethodView.from(request.getProposed()),
                 request.getReviewComment(), request.getCreatedAt(), request.getReviewedAt());
     }
 }

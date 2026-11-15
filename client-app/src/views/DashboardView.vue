@@ -65,12 +65,11 @@ async function cancelRequest() {
   cancelError.value = ''
   try {
     await api.cancelChangeRequest(latestRequest.value.id)
-    await load()
   } catch (e) {
-    // e.g. staff decided a moment earlier: show why next to the request and load its new state
+    // e.g. staff decided a moment earlier: show why next to the request
     cancelError.value = toApiError(e).message
-    await load()
   } finally {
+    await load() // shows the request's current state either way
     cancelling.value = false
     showCancelDialog.value = false
   }

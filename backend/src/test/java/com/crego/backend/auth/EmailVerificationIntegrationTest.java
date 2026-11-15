@@ -2,18 +2,20 @@ package com.crego.backend.auth;
 
 import com.crego.backend.IntegrationTest;
 import com.crego.backend.RecordingMailSender;
+import com.crego.backend.RecordingMailSender.SentEmail;
 import com.crego.backend.client.ClientRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import com.crego.backend.RecordingMailSender.SentEmail;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.RequestBuilder;
 
 import java.time.Instant;
 
 import static com.crego.backend.ApiTestSupport.bearer;
 import static com.crego.backend.ApiTestSupport.json;
+import static com.crego.backend.ApiTestSupport.loginDemoClient;
 import static com.crego.backend.ApiTestSupport.registerUnverifiedClient;
 import static com.crego.backend.ApiTestSupport.verify;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -118,17 +120,15 @@ class EmailVerificationIntegrationTest {
 
     @Test
     void seededDemoClientIsAlreadyVerified() throws Exception {
-        mvc.perform(post("/api/auth/client/login").contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"email\": \"demo@crego.test\", \"password\": \"Demo-Client-2026\"}"))
-                .andExpect(status().isOk());
+        loginDemoClient(mvc); // expects 200
     }
 
-    private static org.springframework.test.web.servlet.RequestBuilder login(String email) {
+    private static RequestBuilder login(String email) {
         return post("/api/auth/client/login").contentType(MediaType.APPLICATION_JSON)
                 .content("{\"email\": \"%s\", \"password\": \"Secret-Pass-123\"}".formatted(email));
     }
 
-    private static org.springframework.test.web.servlet.RequestBuilder resend(String email) {
+    private static RequestBuilder resend(String email) {
         return post("/api/auth/client/resend-verification").contentType(MediaType.APPLICATION_JSON)
                 .content("{\"email\": \"%s\"}".formatted(email));
     }

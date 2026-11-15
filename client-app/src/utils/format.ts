@@ -13,16 +13,16 @@ const brandNames: Record<CardBrand, string> = {
   OTHER: 'Card',
 }
 
+export function brandName(brand: CardBrand | null): string {
+  return brandNames[brand ?? 'OTHER']
+}
+
 /** e.g. "Visa **** 1111" or "Bank account LV** **** **** 5001". */
 export function describeMethod(method: MethodView): string {
   if (method.type === 'CARD') {
-    return `${brandNames[method.cardBrand ?? 'OTHER']} ${method.maskedNumber}`
+    return `${brandName(method.cardBrand)} ${method.maskedNumber}`
   }
   return `Bank account ${method.maskedNumber}`
-}
-
-export function brandName(brand: CardBrand | null): string {
-  return brandNames[brand ?? 'OTHER']
 }
 
 const regionNames = new Intl.DisplayNames(['en'], { type: 'region' })

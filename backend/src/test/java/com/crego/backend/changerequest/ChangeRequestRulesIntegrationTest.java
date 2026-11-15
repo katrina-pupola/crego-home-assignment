@@ -21,13 +21,13 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.UUID;
 
-import static com.crego.backend.ApiTestSupport.CARD_JSON;
 import static com.crego.backend.ApiTestSupport.IBAN_JSON;
+import static com.crego.backend.ApiTestSupport.addCard;
 import static com.crego.backend.ApiTestSupport.bearer;
-import static com.crego.backend.ApiTestSupport.json;
 import static com.crego.backend.ApiTestSupport.loginBo;
 import static com.crego.backend.ApiTestSupport.loginDemoClient;
 import static com.crego.backend.ApiTestSupport.registerNewClient;
+import static com.crego.backend.ApiTestSupport.requestIbanChange;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.hamcrest.Matchers.hasItem;
@@ -37,8 +37,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+/** Business rules around change requests: simultaneous decisions, cancelling, filtering, one direct add. */
 @IntegrationTest
-class ChangeRequestConcurrencyIntegrationTest {
+class ChangeRequestRulesIntegrationTest {
 
     private static final MethodData VISA = new MethodData(PaymentMethodType.CARD, "1111", CardBrand.VISA,
             "Db Test", "12/40", null);
@@ -84,7 +85,8 @@ class ChangeRequestConcurrencyIntegrationTest {
     @Test
     void clientCanCancelOwnPendingRequestOnlyOnce() throws Exception {
         RegisteredClient client = registerNewClient(mvc, mail);
-        Integer requestId = createPendingRequest(client.token());
+        addCard(mvc, client.token());
+        Integer requestId = requestIbanChange(mvc, client.token());
 
         mvc.perform(post("/api/client/change-requests/{id}/cancel", requestId)
                         .header(HttpHeaders.AUTHORIZATION, bearer(loginDemoClient(mvc))))
@@ -101,7 +103,8 @@ class ChangeRequestConcurrencyIntegrationTest {
     @Test
     void boQueueFiltersByStatus() throws Exception {
         RegisteredClient client = registerNewClient(mvc, mail);
-        Integer requestId = createPendingRequest(client.token());
+        addCard(mvc, client.token());
+        Integer requestId = requestIbanChange(mvc, client.token());
         String boToken = loginBo(mvc);
 
         mvc.perform(get("/api/bo/change-requests").param("status", "PENDING").param("size", "100")
@@ -117,25 +120,10 @@ class ChangeRequestConcurrencyIntegrationTest {
     @Test
     void secondDirectAddReturnsConflict() throws Exception {
         RegisteredClient client = registerNewClient(mvc, mail);
-        addCard(client.token());
+        addCard(mvc, client.token());
         mvc.perform(post("/api/client/payment-method").header(HttpHeaders.AUTHORIZATION, bearer(client.token()))
                         .contentType(MediaType.APPLICATION_JSON).content(IBAN_JSON))
                 .andExpect(status().isConflict());
-    }
-
-    private Integer createPendingRequest(String token) throws Exception {
-        addCard(token);
-        return json(mvc.perform(post("/api/client/change-requests")
-                        .header(HttpHeaders.AUTHORIZATION, bearer(token))
-                        .contentType(MediaType.APPLICATION_JSON).content(IBAN_JSON))
-                .andExpect(status().isCreated())
-                .andReturn(), "$.id");
-    }
-
-    private void addCard(String token) throws Exception {
-        mvc.perform(post("/api/client/payment-method").header(HttpHeaders.AUTHORIZATION, bearer(token))
-                        .contentType(MediaType.APPLICATION_JSON).content(CARD_JSON))
-                .andExpect(status().isCreated());
     }
 
     private Client newClient() {

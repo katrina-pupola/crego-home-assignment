@@ -54,9 +54,13 @@ class PaymentMethodServiceTest {
     void secondDirectAddIsRejected() {
         when(paymentMethodRepository.existsByClientIdAndStatus(CLIENT_ID, PaymentMethodStatus.ACTIVE)).thenReturn(true);
 
-        assertThatThrownBy(() -> service.addFirst(CLIENT_ID, VISA))
-                .isInstanceOfSatisfying(ResponseStatusException.class,
-                        e -> assertThat(e.getStatusCode()).isEqualTo(HttpStatus.CONFLICT));
+        assertStatus(() -> service.addFirst(CLIENT_ID, VISA), HttpStatus.CONFLICT);
         verify(paymentMethodRepository, never()).save(any());
+    }
+
+    private static void assertStatus(Runnable action, HttpStatus expected) {
+        assertThatThrownBy(action::run)
+                .isInstanceOfSatisfying(ResponseStatusException.class,
+                        e -> assertThat(e.getStatusCode()).isEqualTo(expected));
     }
 }

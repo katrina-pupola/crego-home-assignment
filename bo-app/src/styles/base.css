@@ -99,8 +99,3 @@ a {
   clip-path: inset(50%);
   white-space: nowrap;
 }
-
-.center {
-  text-align: center;
-  margin-top: 1rem;
-}

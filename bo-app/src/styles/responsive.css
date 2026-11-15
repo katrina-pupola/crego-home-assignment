@@ -8,9 +8,8 @@
     padding: 1.25rem 1rem 2rem;
   }
 
-  /* Top bar on two rows: brand and user first, navigation below */
+  /* Compact top bar: brand on the left, user on the right */
   .topbar-inner {
-    flex-wrap: wrap;
     gap: 0.5rem 0.75rem;
     padding: 0.6rem 1rem;
   }
@@ -23,20 +22,7 @@
   }
 
   .user {
-    order: 2;
     gap: 0.4rem;
-  }
-
-  .topbar nav {
-    order: 3;
-    flex-basis: 100%;
-    overflow-x: auto;
-  }
-
-  .topbar nav a {
-    white-space: nowrap;
-    padding: 0.25rem 0.7rem;
-    font-size: 0.9rem;
   }
 
   .btn-ghost {
@@ -44,15 +30,11 @@
     font-size: 0.9rem;
   }
 
-  /* Page header: title first, action button full width underneath */
+  /* Page header: title first, badge underneath */
   .page-header {
     flex-direction: column;
-    align-items: stretch;
+    align-items: flex-start;
     margin-bottom: 1.25rem;
-  }
-
-  .page-header .btn {
-    text-align: center;
   }
 
   .card {
@@ -106,15 +88,9 @@
     white-space: normal;
   }
 
-  .cell-date,
-  .cell-decided,
-  .cell-comment {
+  .cell-date {
     grid-column: 1 / -1;
     font-size: 0.85rem;
-  }
-
-  .cell-comment {
-    max-width: none;
   }
 
   /* Modal buttons share the full width */
@@ -122,7 +98,7 @@
     flex: 1;
   }
 
-  /* Login and register: short intro so the form is visible without scrolling */
+  /* Login page: short intro so the form is visible without scrolling */
   .auth-layout {
     margin: 0.5rem 0;
   }

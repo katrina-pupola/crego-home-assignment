@@ -77,9 +77,7 @@ class ChangeRequestServiceTest {
                 .thenReturn(Optional.of(activeMethod));
         when(changeRequestRepository.existsByClientIdAndStatus(CLIENT_ID, ChangeRequestStatus.PENDING)).thenReturn(true);
 
-        assertThatThrownBy(() -> service.create(CLIENT_ID, NEW_IBAN))
-                .isInstanceOfSatisfying(ResponseStatusException.class,
-                        e -> assertThat(e.getStatusCode()).isEqualTo(HttpStatus.CONFLICT));
+        assertStatus(() -> service.create(CLIENT_ID, NEW_IBAN), HttpStatus.CONFLICT);
         verify(changeRequestRepository, never()).save(any());
     }
 
@@ -90,9 +88,7 @@ class ChangeRequestServiceTest {
         // Same card as the active one; holder name differs only in letter case
         var sameCard = new PaymentMethodRequest(PaymentMethodType.CARD, "4111 1111 1111 1111", "ANNA OZOLA", "12/28", null);
 
-        assertThatThrownBy(() -> service.create(CLIENT_ID, sameCard))
-                .isInstanceOfSatisfying(ResponseStatusException.class,
-                        e -> assertThat(e.getStatusCode()).isEqualTo(HttpStatus.CONFLICT));
+        assertStatus(() -> service.create(CLIENT_ID, sameCard), HttpStatus.CONFLICT);
         verify(changeRequestRepository, never()).save(any());
     }
 
@@ -103,9 +99,7 @@ class ChangeRequestServiceTest {
                 .thenReturn(Optional.of(activeMethod));
 
         // NEW_IBAN is the same account, typed in lowercase with spaces
-        assertThatThrownBy(() -> service.create(CLIENT_ID, NEW_IBAN))
-                .isInstanceOfSatisfying(ResponseStatusException.class,
-                        e -> assertThat(e.getStatusCode()).isEqualTo(HttpStatus.CONFLICT));
+        assertStatus(() -> service.create(CLIENT_ID, NEW_IBAN), HttpStatus.CONFLICT);
         verify(changeRequestRepository, never()).save(any());
     }
 
@@ -126,9 +120,7 @@ class ChangeRequestServiceTest {
         when(paymentMethodRepository.findByClientIdAndStatus(CLIENT_ID, PaymentMethodStatus.ACTIVE))
                 .thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> service.create(CLIENT_ID, NEW_IBAN))
-                .isInstanceOfSatisfying(ResponseStatusException.class,
-                        e -> assertThat(e.getStatusCode()).isEqualTo(HttpStatus.CONFLICT));
+        assertStatus(() -> service.create(CLIENT_ID, NEW_IBAN), HttpStatus.CONFLICT);
         verify(changeRequestRepository, never()).save(any());
     }
 
@@ -141,9 +133,13 @@ class ChangeRequestServiceTest {
         othersRequest.setStatus(ChangeRequestStatus.PENDING);
         when(changeRequestRepository.findById(7L)).thenReturn(Optional.of(othersRequest));
 
-        assertThatThrownBy(() -> service.cancel(CLIENT_ID, 7L))
-                .isInstanceOfSatisfying(ResponseStatusException.class,
-                        e -> assertThat(e.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN));
+        assertStatus(() -> service.cancel(CLIENT_ID, 7L), HttpStatus.FORBIDDEN);
         assertThat(othersRequest.getStatus()).isEqualTo(ChangeRequestStatus.PENDING);
+    }
+
+    private static void assertStatus(Runnable action, HttpStatus expected) {
+        assertThatThrownBy(action::run)
+                .isInstanceOfSatisfying(ResponseStatusException.class,
+                        e -> assertThat(e.getStatusCode()).isEqualTo(expected));
     }
 }
